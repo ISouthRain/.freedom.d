@@ -69,7 +69,7 @@
       (tabulated-list-revert)
       (display-buffer (current-buffer))))
 
-  
+  
 
 
   (defun sanityinc/show-init-time ()
@@ -81,7 +81,7 @@
 ;;; init-benchmarking.el ends here
 
 
-  :config
+
   ;; save a list of open files in ~/.emacs.d/.emacs.desktop
   (setq desktop-path (list user-emacs-directory)
         desktop-auto-save-timeout 600)
