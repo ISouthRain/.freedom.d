@@ -103,7 +103,8 @@
      '("t" . meow-till)
      '("u" . meow-undo)
      '("U" . meow-undo-in-selection)
-     '("v" . meow-visit)
+     ;;'("v" . meow-visit)
+     '("v" . +meow-visual)
      '("w" . meow-mark-word)
      '("W" . meow-mark-symbol)
      '("x" . meow-line)
@@ -161,5 +162,9 @@ S is string of the two-key sequence."
 
   )
 
+(defun +meow-visual ()
+  (interactive)
+  (meow-left-expand)
+  (meow-right-expand))
 
 (provide 'init-meow)
