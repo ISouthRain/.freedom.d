@@ -16,8 +16,8 @@
   (when freedom/is-linux
     (when (not freedom/is-termux)
       (setq url-proxy-services '(
-                                 ("http" . "192.168.31.241:7890")
-                                 ("https" . "192.168.31.241:7890")))
+                                 ("http" . "192.168.1.8:7890")
+                                 ("https" . "192.168.1.8:7890")))
       )
     )
 

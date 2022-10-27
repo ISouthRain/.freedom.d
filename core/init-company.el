@@ -29,7 +29,7 @@
   :init
   (global-corfu-mode)
   :config
-  (setq corfu-auto-delay 1)
+  (setq corfu-auto-delay 0.8)
   )
 
 

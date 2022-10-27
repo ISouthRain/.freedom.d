@@ -82,7 +82,7 @@
   ;; 空格代替制表符缩进
   (setq-default indent-tabs-mode nil)
   ;;高亮当前行
-  (global-hl-line-mode 1)
+  ;; (global-hl-line-mode 1)
   ;;关闭启动画面
   (setq inhibit-startup-message t)
   ;;自动换行

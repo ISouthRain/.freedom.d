@@ -5,7 +5,7 @@
   :commands (elfeed)
   :init
   (setq url-queue-timeout 30
-        elfeed-search-filter "@6-months-ago")
+        elfeed-search-filter "@2-week-ago")
   (setq elfeed-db-directory (concat freedom-emacs-directory ".local/.elfeed/db/"))
   :config
   ;; recentf 排除
