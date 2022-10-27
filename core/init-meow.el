@@ -21,6 +21,7 @@
      '("bk" . kill-this-buffer)
      ;; '("c SPC" . align-regexp)
      '("fr" . consult-recent-file)
+     '("fy" . gts-do-translate)
      '("qR" . restart-emacs)
      '("wk" . windmove-up)
      '("wj" . windmove-down)
