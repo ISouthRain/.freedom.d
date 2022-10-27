@@ -121,6 +121,7 @@
      '("<" . indent-rigidly-left)
      '("C-w" . ace-window)
      '("C-r" . undo-fu-only-redo)
+     '("\"" . consult-yank-pop)
      '("<escape>" . ignore)))
   (meow-setup)
   (meow-global-mode 1)
