@@ -3,6 +3,8 @@
 (use-package vertico
   :ensure t
   :defer 0.5
+  :bind (:map vertico-map
+              ("DEL" . vertico-directory-delete-char))
   :config
   (vertico-mode t)
   (setq vertico-count 15))
