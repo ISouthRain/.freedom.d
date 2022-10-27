@@ -2,7 +2,7 @@
 ;; awesome-tab 状态栏
 (use-package awesome-tab
   :ensure nil
-  :load-path "~/.emacs.d/core/plugins"
+  :load-path "~/.freedom.d/core/plugins"
   :defer 0.5
   :config
   (awesome-tab-mode t))

@@ -1,7 +1,7 @@
 (eval-and-compile
   (customize-set-variable
    'package-archives '(
-                       ("elpa-local" . "~/.emacs.d/.local/elpa-local/")
+                       ("elpa-local" . "~/.freedom.d/.local/elpa-local/")
                        ("melpa" . "https://melpa.org/packages/")
                        ("melpa-stable" . "https://stable.melpa.org/packages/")
                        ("gnu"    . "http://mirrors.tuna.tsinghua.edu.cn/elpa/gnu/")

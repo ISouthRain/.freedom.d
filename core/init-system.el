@@ -48,6 +48,6 @@
 
 (defun freedom/config ()
   (interactive)
-  (find-file "~/.emacs.d/init.el"))
+  (find-file "~/.freedom.d/init.el"))
 
 (provide 'init-system)
