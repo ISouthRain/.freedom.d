@@ -34,7 +34,7 @@
   (require 'init-company)
   (require 'init-translate)
   (require 'init-calendar)
-  (require 'init-session)
+  (require 'init-sessions)
 
   );; Cache Max End, Also the end of the package.
 
