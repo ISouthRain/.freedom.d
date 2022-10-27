@@ -39,8 +39,6 @@
   (defun +indent-guides-init-faces-h (&rest _)
     (when (display-graphic-p)
       (highlight-indent-guides-auto-set-faces)))
-  (when doom-theme
-    (+indent-guides-init-faces-h))
   (add-hook 'org-mode-local-vars-hook
     (defun +indent-guides-disable-maybe-h ()
       (and highlight-indent-guides-mode
