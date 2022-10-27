@@ -1,9 +1,16 @@
 ;; core/init-pyim.el -*- lexical-binding: t; -*-
 
+(use-package pyim-basedict
+  :ensure t
+  :pin elpa-local
+  )
 (use-package pyim
+  :ensure t
+  :pin elpa-local
   :init
-  (setq pyim-dcache-directory (format "%s.local/pyim" doom-user-dir))
-  :defer 2
+  (setq pyim-dcache-directory (format "%s.local/pyim" freedom-emacs-directory))
+  (setq default-input-method "pyim")
+  :defer 0.5
   :config
   (pyim-basedict-enable);; 为 pyim 添加词库
   (pyim-default-scheme 'xiaohe-shuangpin) ;;
@@ -51,7 +58,7 @@
 
   ;; 添加对 meow 支持 normal 进行英文输入
   (defalias 'pyim-probe-meow-normal-mode #'(lambda nil
-                                                  (meow-normal-mode-p)))
+                                             (meow-normal-mode-p)))
   (setq-default pyim-english-input-switch-functions
                 '(pyim-probe-meow-normal-mode))
 

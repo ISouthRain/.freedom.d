@@ -35,7 +35,8 @@
   (require 'init-translate)
   (require 'init-calendar)
   (require 'init-sessions)
-
+  (require 'init-markdown)
+  (require 'init-pyim)
   );; Cache Max End, Also the end of the package.
 
 (provide 'freedom)

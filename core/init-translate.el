@@ -42,5 +42,17 @@
     (toggle-corfu-english-helper))
   )
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; 输入中文后自动翻译
+(use-package insert-translated-name
+  :ensure nil
+  :defer 0.5
+  :load-path "~/.freedom.d/core/plugins/"
+  :config
+  (setq insert-translated-name-translate-engine "youdao");; ;google  youdao
+  (defun freedom-english-translate ()
+    (interactive))
+  (advice-add #'freedom-english-translate :override #'insert-translated-name-insert)
+  )
 
 (provide 'init-translate)

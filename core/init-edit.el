@@ -1,3 +1,19 @@
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; yasnippet 补全
+(use-package yasnippet
+  :ensure t
+  :defer 0.5
+  :hook '((prog-mode . yas-minor-mode)
+          (after-init . yas-global-mode))
+  :config
+  (yas-reload-all)
+  (setq yas--default-user-snippets-dir (format "%ssnippets" freedom-emacs-directory))
+  (setq yas-snippet-dirs
+        '(
+          "~/.freedom.d/snippets"
+          ))
+  )
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; 快速点击各类链接
 (use-package ace-link
@@ -101,6 +117,7 @@
               (and highlight-indent-guides-mode
                    (bound-and-true-p org-indent-mode)
                    (highlight-indent-guides-mode -1)))))
+
 
 
 (provide 'init-edit)
