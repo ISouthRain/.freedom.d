@@ -25,11 +25,11 @@
   :defer 0.5
   :init
   (when freedom/is-windows
-    (setq cnfonts-directory (expand-file-name ".local/cnfonts/windows" +user-emacs-directory)))
+    (setq cnfonts-directory (expand-file-name ".local/cnfonts/windows" freedom-emacs-directory)))
   (when freedom/is-linux
-    (setq cnfonts-directory (expand-file-name ".local/cnfonts/linux" +user-emacs-directory)))
+    (setq cnfonts-directory (expand-file-name ".local/cnfonts/linux" freedom-emacs-directory)))
   (when freedom/is-darwin
-    (setq cnfonts-directory (expand-file-name ".local/cnfonts/darwin" +user-emacs-directory)))
+    (setq cnfonts-directory (expand-file-name ".local/cnfonts/darwin" freedom-emacs-directory)))
   :custom
   (cnfonts-personal-fontnames '(("Consolas" "Iosevka" "Constantia" "PragmataPro Mono Liga" "Go Mono" "Fira Code" "Ubuntu Mono" "SF Mono");; 英文
                                 ("微软雅黑" "Sarasa Mono SC Nerd" "M 盈黑 PRC W5" "方正聚珍新仿简繁" "苹方 常规" "苹方 中等" "M 盈黑 PRC W4" "PragmataPro Mono Liga");; 中文

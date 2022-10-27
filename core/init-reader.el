@@ -6,7 +6,7 @@
   :init
   (setq url-queue-timeout 30
         elfeed-search-filter "@6-months-ago")
-  (setq elfeed-db-directory (concat +user-emacs-directory ".local/.elfeed/db/"))
+  (setq elfeed-db-directory (concat freedom-emacs-directory ".local/.elfeed/db/"))
   :config
   ;; recentf 排除
   (when recentf-mode
@@ -22,7 +22,7 @@
   :commands (elfeed)
   :config
   (elfeed-org)
-  (setq rmh-elfeed-org-files (list (expand-file-name "elfeed.org" +user-emacs-directory)))
+  (setq rmh-elfeed-org-files (list (expand-file-name "elfeed.org" freedom-emacs-directory)))
   )
 
 (provide 'init-reader)

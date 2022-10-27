@@ -16,7 +16,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; elpa-local
 (require 'elpa-mirror)
-(setq elpamr-default-output-directory (format "%s.local/elpa-local" +user-emacs-directory))
+(setq elpamr-default-output-directory (format "%s.local/elpa-local" freedom-emacs-directory))
 
 
 (provide 'init-package)

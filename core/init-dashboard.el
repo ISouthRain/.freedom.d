@@ -20,10 +20,10 @@
   ;; Logo 图标 路径
   (if (display-graphic-p)
       ;; GUI 代码放置，多行代码的话用 (progn) 包一下
-      ;; (setq dashboard-startup-banner (expand-file-name "logo.png" +user-emacs-directory))
-      (setq dashboard-startup-banner (expand-file-name "banner/emacs-gnu-logo.png" +user-emacs-directory))
+      ;; (setq dashboard-startup-banner (expand-file-name "logo.png" freedom-emacs-directory))
+      (setq dashboard-startup-banner (expand-file-name "banner/emacs-gnu-logo.png" freedom-emacs-directory))
     ;; TUI 代码放置
-    (setq dashboard-startup-banner (expand-file-name "logo.txt" +user-emacs-directory)))
+    (setq dashboard-startup-banner (expand-file-name "logo.txt" freedom-emacs-directory)))
   ;; 导航目录
   (setq dashboard-items '(
                           (recents  . 10)
