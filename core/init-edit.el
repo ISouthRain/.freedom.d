@@ -85,6 +85,8 @@
   :commands (dired)
   :hook '((dired-mode . all-the-icons-dired-mode)
           )
+  :bind (:map dired-mode-map
+              ("U" . dired-up-directory))
   :config
   (use-package all-the-icons-dired
     :ensure t)

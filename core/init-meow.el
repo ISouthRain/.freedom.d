@@ -8,7 +8,6 @@
      '("k" . meow-prev)
      '("h" . meow-left)
      '("l" . meow-right)
-     ;; '("f" . avy-goto-char)
      '("." . meow-inner-of-thing)
      '("," . meow-bounds-of-thing)
      '("<escape>" . ignore))
@@ -85,6 +84,10 @@
      '("f" . meow-find)
      '("F" . avy-goto-char)
      '("g" . meow-cancel-selection)
+     ;; '("gb" . end-of-buffer)
+     ;; '("gg" . beginning-of-buffer)
+     ;; '("gd" . xref-find-definitions)
+     ;; '("gD" . xref-pop-marker-stack)
      '("G" . meow-grab)
      '("h" . meow-left)
      '("H" . meow-left-expand)
@@ -126,22 +129,23 @@
      '("=" . meow-indent)
      '(">" . indent-rigidly-right)
      '("<" . indent-rigidly-left)
-     '("C-w" . ace-window)
      '("C-r" . undo-tree-redo)
      '("\"" . consult-yank-pop)
-     '("<escape>" . ignore)))
+     ;; '("<escape>" . ignore)
+     '("<escape>" . meow-cancel-selection)
+     ))
   (meow-setup)
   (meow-global-mode 1)
-  (setq meow-expand-hint-remove-delay 2
+  (setq meow-expand-hint-remove-delay 3
         meow-use-clipboard t)
 
-  ;; Use jk to escape from insert state to normal state
+  ;;   ;; Use jk to escape from insert state to normal state
   (defvar meow-two-char-escape-sequence "jk")
   (defvar meow-two-char-escape-delay 0.5)
   (defun meow--two-char-exit-insert-state (s)
     "Exit meow insert state when pressing consecutive two keys.
 
-S is string of the two-key sequence."
+  S is string of the two-key sequence."
     (when (meow-insert-mode-p)
       (let ((modified (buffer-modified-p))
             (undo-list buffer-undo-list))
@@ -166,6 +170,7 @@ S is string of the two-key sequence."
   (define-key meow-insert-state-keymap (substring meow-two-char-escape-sequence 0 1)
     #'meow-two-char-exit-insert-state)
 
+  
   )
 
 (defun +meow-visual ()
