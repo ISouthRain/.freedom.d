@@ -4,13 +4,15 @@
   :ensure t
   :pin elpa-local
   )
+
 (use-package pyim
   :ensure t
   :pin elpa-local
+  :defer 0.5
   :init
   (setq pyim-dcache-directory (format "%s.local/pyim" freedom-emacs-directory))
   (setq default-input-method "pyim")
-  :defer 0.5
+  :bind ("C-\\". freedom-english-translate)
   :config
   (pyim-basedict-enable);; 为 pyim 添加词库
   (pyim-default-scheme 'xiaohe-shuangpin) ;;

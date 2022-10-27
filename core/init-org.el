@@ -323,4 +323,24 @@
         org-roam-ui-open-on-start t)
   )
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; org 标题加密， 只需添加 :crypt:
+(use-package org-crypt
+  :defer 1
+  :ensure nil
+  :config
+  (org-crypt-use-before-save-magic)
+  (setq org-tags-exclude-from-inheritance '("crypt"))
+  (setq org-crypt-key "885AC4F89BA7A3F8")
+  (setq auto-save-default nil)
+  ;; 解决 ^M 解密问题
+  (defun freedom/org-decrypt-entry ()
+    "Replace DOS eolns CR LF with Unix eolns CR"
+    (interactive)
+    (goto-char (point-min))
+    (while (search-forward "\r" nil t) (replace-match ""))
+    (org-decrypt-entry))
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  (setq epg-gpg-program "gpg2"))
+
 (provide 'init-org)
