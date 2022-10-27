@@ -25,7 +25,7 @@
   (require 'init-meow)
   (require 'init-ui)
   (require 'init-search)
-  (require 'init-dashboard)
+  ;;(require 'init-dashboard)
   (require 'init-org)
   (require 'init-edit)
   (require 'init-navigation)
@@ -34,6 +34,7 @@
   (require 'init-company)
   (require 'init-translate)
   (require 'init-calendar)
+  (require 'init-session)
 
   );; Cache Max End, Also the end of the package.
 
