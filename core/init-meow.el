@@ -170,7 +170,6 @@
   (define-key meow-insert-state-keymap (substring meow-two-char-escape-sequence 0 1)
     #'meow-two-char-exit-insert-state)
 
-  
   )
 
 (defun +meow-visual ()
