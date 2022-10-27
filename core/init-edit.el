@@ -4,7 +4,8 @@
   :hook '((dired-mode . all-the-icons-dired-mode)
           )
   :config
-  (use-package all-the-icons-dired)
+  (use-package all-the-icons-dired
+    :ensure t)
   )
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; aggressive-indent 自动缩进
