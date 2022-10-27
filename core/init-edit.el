@@ -1,3 +1,13 @@
+(use-package projectile
+  :ensure t
+  :hook (after-init . projectile-mode)
+  :config
+  (use-package ripgrep
+    :ensure t)
+  (use-package projectile-ripgrep
+    :ensure t)
+  ;; (setq ripgrep-arguments "rg --null --line-buffered --color=never --max-columns=1000 --path-separator /   --smart-case --no-heading --line-number")
+  )
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; yasnippet 补全
 (use-package yasnippet

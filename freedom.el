@@ -37,6 +37,8 @@
   (require 'init-sessions)
   (require 'init-markdown)
   (require 'init-pyim)
+  (require 'init-vim)
+  
   );; Cache Max End, Also the end of the package.
 
 (provide 'freedom)

@@ -123,7 +123,7 @@
              "* %^{记些什么} %?\n  %i\n" :kill-buffer t :immediate-finish t)
 
             ;;日程安排
-            ("a" "日程安排" plain (file+function (format "%s" freedom-org-capture-Agenda) find-month-tree)
+            ("a" "日程安排" plain (file+function "~/MyFile/Org/Agenda" find-month-tree)
              "*** [#%^{优先级}] %^{安排} \n SCHEDULED: %^T \n  :地点: %^{地点}\n" :kill-buffer t :immediate-finish t)
 
             ;;笔记
@@ -342,5 +342,6 @@
     (org-decrypt-entry))
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   (setq epg-gpg-program "gpg2"))
+
 
 (provide 'init-org)
