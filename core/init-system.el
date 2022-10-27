@@ -46,8 +46,8 @@
             ":" (or (file-remote-p file 'localname)
                     file))))
 
-(defun freedom/config ()
+(defun Myconfig ()
   (interactive)
-  (find-file "~/.freedom.d/init.el"))
+  (find-file "~/.freedom.d/freedom.el"))
 
 (provide 'init-system)
