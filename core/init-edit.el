@@ -8,7 +8,6 @@
   (use-package projectile-ripgrep
     :ensure t
     :pin elpa-local)
-
   )
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; yasnippet 补全
