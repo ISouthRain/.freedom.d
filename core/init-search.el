@@ -25,7 +25,12 @@
   :init
   (setq completion-styles '(orderless basic)
         completion-category-defaults nil
-        completion-category-overrides '((file (styles partial-completion)))))
+        completion-category-overrides '((file (styles partial-completion))))
+  ;; 据说这样设置可以让 eglot corfu orderless
+  ;; (setq completion-styles '(orderless flex)
+  ;;       completion-category-overrides '((eglot (styles . (orderless flex)))))
+  )
+
 ;; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; ;; A few more useful configurations...
 (use-package emacs

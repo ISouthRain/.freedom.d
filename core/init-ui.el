@@ -31,16 +31,16 @@
   (when freedom/is-darwin
     (setq cnfonts-directory (expand-file-name ".local/cnfonts/darwin" freedom-emacs-directory)))
   :custom
-  (cnfonts-personal-fontnames '(("Consolas" "Iosevka" "Constantia" "PragmataPro Mono Liga" "Go Mono" "Fira Code" "Ubuntu Mono" "SF Mono");; 英文
-                                ("微软雅黑" "Sarasa Mono SC Nerd" "M 盈黑 PRC W5" "方正聚珍新仿简繁" "苹方 常规" "苹方 中等" "M 盈黑 PRC W4" "PragmataPro Mono Liga");; 中文
-                                ("Simsun-ExtB" "方正聚珍新仿简繁" "PragmataPro Mono Liga");; EXT-B
-                                ("Segoe UI Symbol" "PragmataPro Mono Liga")));; 字符
+  (cnfonts-personal-fontnames '(("Consolas" "Iosevka" "Bookerly" "Constantia" "PragmataPro Mono Liga" "Go Mono" "Fira Code" "Ubuntu Mono" "SF Mono");; 英文
+                                ("微软雅黑" "Sarasa Mono SC Nerd" "Bookerly" "M 盈黑 PRC W5" "方正聚珍新仿简繁" "苹方 常规" "苹方 中等" "M 盈黑 PRC W4" "PragmataPro Mono Liga");; 中文
+                                ("Simsun-ExtB" "Bookerly" "方正聚珍新仿简繁" "PragmataPro Mono Liga");; EXT-B
+                                ("Segoe UI Symbol" "Bookerly" "PragmataPro Mono Liga")));; 字符
   :config
   (setq cnfonts-profiles
         '("program" "org-mode" "read-book"))
   (when (not freedom/is-termux)
-      (cnfonts-mode)
-      (cnfonts-set-font)
+    (cnfonts-mode)
+    (cnfonts-set-font)
     )
   )
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

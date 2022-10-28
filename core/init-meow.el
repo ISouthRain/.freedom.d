@@ -36,7 +36,7 @@
      '("op" . dired)
      '("pf" . projectile-find-file)
      '("pd" . projectile-find-dir)
-     '("ps" . consult-ripgrep)
+     '("ps" . projectile-ripgrep)
      '("pa" . projectile-add-known-project)
      '("pb" . projectile-switch-to-buffer)
      '("nn" . org-capture)
@@ -123,7 +123,6 @@
      '("z" . meow-pop-selection)
      '("'" . repeat)
      '("$" . move-end-of-line)
-     '("<f12>" . dumb-jump-go)
      '("/" . consult-line)
      '("C-s" . consult-line)
      '("=" . meow-indent)
@@ -139,45 +138,9 @@
   (setq meow-expand-hint-remove-delay 3
         meow-use-clipboard t)
 
-  ;;   ;; Use jk to escape from insert state to normal state
-  (defvar meow-two-char-escape-sequence "jk")
-  (defvar meow-two-char-escape-delay 0.5)
-  (defun meow--two-char-exit-insert-state (s)
-    "Exit meow insert state when pressing consecutive two keys.
-
-  S is string of the two-key sequence."
-    (when (meow-insert-mode-p)
-      (let ((modified (buffer-modified-p))
-            (undo-list buffer-undo-list))
-        (insert (elt s 0))
-        (let* ((second-char (elt s 1))
-               (event
-                (if defining-kbd-macro
-                    (read-event nil nil)
-                  (read-event nil nil meow-two-char-escape-delay))))
-          (when event
-            (if (and (characterp event) (= event second-char))
-                (progn
-                  (backward-delete-char 1)
-                  (set-buffer-modified-p modified)
-                  (setq buffer-undo-list undo-list)
-                  (meow-insert-exit))
-              (push event unread-command-events)))))))
-  (defun meow-two-char-exit-insert-state ()
-    "Exit meow insert state when pressing consecutive two keys."
-    (interactive)
-    (meow--two-char-exit-insert-state meow-two-char-escape-sequence))
-  (define-key meow-insert-state-keymap (substring meow-two-char-escape-sequence 0 1)
-    #'meow-two-char-exit-insert-state)
-
-  )
-
-
 
   (defun +meow-insert-chord-two (s otherfunction keydelay)
-    "Exit meow insert state when pressing consecutive two keys.
-
-  S is string of the two-key sequence."
+    "类似 key-chord 功能"
     (when (meow-insert-mode-p)
       (let ((modified (buffer-modified-p))
             (undo-list buffer-undo-list))
@@ -195,7 +158,7 @@
                   (setq buffer-undo-list undo-list)
                   (apply otherfunction nil))
               (push event unread-command-events)))))))
-  
+
   (defun +meow-chord-pyim ()
     (interactive)
     (+meow-insert-chord-two ";;" #'toggle-input-method 0.5))
@@ -211,7 +174,8 @@
     (meow-insert-exit)
     (corfu-quit))
 
-
+  
+  )
 (defun +meow-visual ()
   (interactive)
   (meow-left-expand)

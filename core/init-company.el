@@ -29,10 +29,12 @@
   :init
   (global-corfu-mode)
   :config
-  (setq corfu-auto-delay 0.1)
+  (setq corfu-auto-delay 0.1
+        corfu-auto-prefix 2)
   )
 
 
-
-
 (provide 'init-company)
+
+
+

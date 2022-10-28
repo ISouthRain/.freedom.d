@@ -38,7 +38,7 @@
   (require 'init-markdown)
   (require 'init-pyim)
   (require 'init-vim)
-  
+  (require 'init-lsp)
   );; Cache Max End, Also the end of the package.
 
 (provide 'freedom)
