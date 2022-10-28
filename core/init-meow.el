@@ -173,7 +173,8 @@
   )
 
 
-  (defun +meow-chord (s otherfunction keydelay)
+
+  (defun +meow-insert-chord-two (s otherfunction keydelay)
     "Exit meow insert state when pressing consecutive two keys.
 
   S is string of the two-key sequence."
@@ -194,12 +195,21 @@
                   (setq buffer-undo-list undo-list)
                   (apply otherfunction nil))
               (push event unread-command-events)))))))
+  
   (defun +meow-chord-pyim ()
-    "Exit meow insert state when pressing consecutive two keys."
     (interactive)
-    (+meow-chord ";;" #'toggle-input-method 0.5))
+    (+meow-insert-chord-two ";;" #'toggle-input-method 0.5))
   (define-key meow-insert-state-keymap (substring ";;" 0 1)
     #'+meow-chord-pyim)
+  (defun +meow-chord-insert-exit ()
+    (interactive)
+    (+meow-insert-chord-two "jk" #'+meow-insert-exit 0.5))
+  (define-key meow-insert-state-keymap (substring "jk" 0 1)
+    #'+meow-chord-insert-exit)
+  (defun +meow-insert-exit ()
+    (interactive)
+    (meow-insert-exit)
+    (corfu-quit))
 
 
 (defun +meow-visual ()
