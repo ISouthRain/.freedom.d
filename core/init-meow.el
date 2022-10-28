@@ -172,6 +172,36 @@
 
   )
 
+
+  (defun +meow-chord (s otherfunction keydelay)
+    "Exit meow insert state when pressing consecutive two keys.
+
+  S is string of the two-key sequence."
+    (when (meow-insert-mode-p)
+      (let ((modified (buffer-modified-p))
+            (undo-list buffer-undo-list))
+        (insert (elt s 0))
+        (let* ((second-char (elt s 1))
+               (event
+                (if defining-kbd-macro
+                    (read-event nil nil)
+                  (read-event nil nil keydelay))))
+          (when event
+            (if (and (characterp event) (= event second-char))
+                (progn
+                  (backward-delete-char 1)
+                  (set-buffer-modified-p modified)
+                  (setq buffer-undo-list undo-list)
+                  (apply otherfunction nil))
+              (push event unread-command-events)))))))
+  (defun +meow-chord-pyim ()
+    "Exit meow insert state when pressing consecutive two keys."
+    (interactive)
+    (+meow-chord ";;" #'toggle-input-method 0.5))
+  (define-key meow-insert-state-keymap (substring ";;" 0 1)
+    #'+meow-chord-pyim)
+
+
 (defun +meow-visual ()
   (interactive)
   (meow-left-expand)
