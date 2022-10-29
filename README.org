@@ -1,4 +1,6 @@
 * Freedom Emacs
+** Info
+   ⚠️ 这是个人配置， 不建议其他人使用 ⚠️
 ** 安装
    + git clone https://github.com/ISouthRain/.freedom.d
    + mkdir -p ~/.emacs.d
