@@ -1,3 +1,4 @@
 .cache/
 elpa/
 server/
+.sync*

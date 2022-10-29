@@ -2,11 +2,11 @@
   (customize-set-variable
    'package-archives '(
                        ("elpa-local" . "~/.freedom.d/.local/elpa-local/")
-                       ("melpa" . "https://melpa.org/packages/")
-                       ("melpa-stable" . "https://stable.melpa.org/packages/")
-                       ("gnu"    . "http://mirrors.tuna.tsinghua.edu.cn/elpa/gnu/")
-                       ("nongnu" . "http://mirrors.tuna.tsinghua.edu.cn/elpa/nongnu/")
-                       ("melpa"  . "http://mirrors.tuna.tsinghua.edu.cn/elpa/melpa/")
+                       ;;("melpa" . "https://melpa.org/packages/")
+                       ;;("melpa-stable" . "https://stable.melpa.org/packages/")
+                       ;; ("gnu"    . "http://mirrors.tuna.tsinghua.edu.cn/elpa/gnu/")
+                       ;; ("nongnu" . "http://mirrors.tuna.tsinghua.edu.cn/elpa/nongnu/")
+                       ;; ("melpa"  . "http://mirrors.tuna.tsinghua.edu.cn/elpa/melpa/")
 		       ))
   (package-initialize)
   (unless (package-installed-p 'use-package)
