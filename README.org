@@ -1,5 +1,7 @@
 * Freedom Emacs
-** 这是什么？
+** 安装
+   + git clone https://github.com/ISouthRain/.freedom.d
+   + mkdir -p ~/.emacs.d && cp ~/.freedom.d/init.el ~/.emacs.d/
 ** Configure
 *** Package-archives
 #+begin_src elisp
