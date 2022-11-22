@@ -19,8 +19,14 @@
     Emacs Talk
 *** http://feeds.feedburner.com/ruanyifeng
     阮一峰
+*** http://www.ruanyifeng.com/blog/atom.xml
+    阮一峰
 ** Twitter :Twitter:
 *** https://rsshub.app/twitter/user/PiCoreTeam
     PiNetwork
 *** https://rsshub.app/twitter/user/checkra1n
     Checkra1n
+
+** Youtube :Youtube:
+*** https://rsshub.app/youtube/channel/UCvijahEyGtvMpmMHBu4FS2w
+    零度解说
