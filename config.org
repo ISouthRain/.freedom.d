@@ -922,6 +922,19 @@
   )
 #+end_src
 
+**** org-html-themify
+#+begin_src emacs-lisp :tangle no
+(use-package org-html-themify
+  :ensure nil
+  :load-path "~/.freedom.d/core/plugins/org-html-themify"
+  :hook (org-mode . org-html-themify-mode)
+  :defer 1
+  :config
+  (setq org-html-themify-themes
+        '((dark . doom-one)
+          (light . doom-solarized-light)))
+  )
+#+end_src
 **** org-crypt
 #+begin_src emacs-lisp :tangle yes
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
