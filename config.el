@@ -5,9 +5,6 @@
                        ("melpa" . "http://melpa.org/packages/")
                        ("org" . "http://orgmode.org/elpa/")
                        ("gnu" . "https://elpa.gnu.org/packages/")
-                       ;; ("gnu"    . "http://mirrors.tuna.tsinghua.edu.cn/elpa/gnu/")
-                       ;; ("nongnu" . "http://mirrors.tuna.tsinghua.edu.cn/elpa/nongnu/")
-                       ;; ("melpa"  . "http://mirrors.tuna.tsinghua.edu.cn/elpa/melpa/")
                        ))
   (package-initialize)
   (unless (package-installed-p 'use-package)
@@ -20,8 +17,7 @@
 (use-package elpa-mirror
   :ensure t
   :defer 0.5
-  :config
-  (setq elpamr-default-output-directory (format "%s.local/elpa-local" freedom-emacs-directory)))
+  :config (setq elpamr-default-output-directory (format "%s.local/elpa-local" freedom-emacs-directory)))
 
 (use-package server
   :ensure nil
@@ -49,45 +45,99 @@
   (setq freedom/is-tui (not (display-graphic-p)))
   )
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; basic
 (use-package emacs
   :ensure nil
-  :defer t
+  :defer 0.5
   :config
+  ;; 设置Emacs标题
+  (setq frame-title-format '("Happy Emacs - %b")
+        icon-title-format frame-title-format)
+  ;; 光标闪烁
+  ;; (setq blink-cursor-mode t)
+  ;; 显示电池
+  (if (display-graphic-p)
+      (display-battery-mode 1))
+  ;; 空格代替制表符缩进
+  (setq-default indent-tabs-mode nil)
+  ;;高亮当前行
+  (global-hl-line-mode 1)
+  ;;关闭启动画面
+  (setq inhibit-startup-message t)
+  ;;自动换行
+  (setq toggle-truncate-lines t)
+  ;; 行号
+  (setq display-line-numbers 'relative
+        display-line-numbers-type 'relative)
+  (setq display-line-numbers-width 3
+        display-line-numbers-widen 1)
+  (global-display-line-numbers-mode t)
+  ;;显示时间
+  (setq display-time-mode t) ;; 常显
+  (setq display-time-24hr-format t) ;;格式
+  (setq display-time-day-and-date t) ;;显示时间、星期、日期
+  ;; 关闭启动帮助画面
+  (setq inhibit-splash-screen 1)
+  ;; 关闭备份文件
+  (setq make-backup-files nil)
+  ;; 取消备份
+  (setq create-lockfiles nil)
+  ;; 自动加载外部修改的文件
+  (global-auto-revert-mode 1)
+  ;; 关闭警告声
+  (setq ring-bell-function 'ignore)
+  ;; 简化yes和no
+  (fset 'yes-or-no-p 'y-or-n-p)
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   ;; 设置编码
   (setq default-buffer-file-coding-system 'utf-8)
   (prefer-coding-system 'utf-8)
   (set-default-coding-systems 'utf-8)
   ;; 关闭 native-comp 错误警告
-  ;; Silence compiler warnings as they can be pretty disruptive
   (setq comp-async-report-warnings-errors nil)
   ;; 为防止不小心按到C-c C-x,在退出Emacs前需要确认
-  (setq confirm-kill-emacs (lambda (prompt) (y-or-n-p-with-timeout "是否退出Emacs:(" 60 "y")))
+  (setq confirm-kill-emacs (lambda (prompt) (y-or-n-p-with-timeout "Quit Emacs:)  " 60 "y")))
 
-  )
-
-(use-package emacs
-  :ensure nil
-  :defer t
-  :config
+  ;;隐藏菜单栏工具栏滚动条
+  (menu-bar-mode 0)
+  (tool-bar-mode 0)
+  (scroll-bar-mode 0)
+  (tooltip-mode 0)
+  (when freedom/is-linux
+    (when (not freedom/is-termux)
+      ;; 调整启动时窗口大小/最大化/全屏
+      (set-face-attribute 'default nil :height 155)
+      (setq initial-frame-alist
+            '((top . 60) (left . 400) (width . 85) (height . 38)))
+      ;; (add-hook 'window-setup-hook #'toggle-frame-maximized t)
+      ;; (add-hook 'window-setup-hook #'toggle-frame-fullscreen t)
+      ;; )
+      ))
+  (when (string= "windows-nt" system-type)
+    ;; 调整启动时窗口位置/大小/最大化/全屏
+    (setq initial-frame-alist
+          '((top . 20) (left . 450) (width . 110) (height . 48)))
+    ;; (add-hook 'window-setup-hook #'toggle-frame-maximized t)
+    ;; (add-hook 'window-setup-hook #'toggle-frame-fullscreen t)
+    ;; )
+    )
+  (when (string= "darwin" system-type)
+    (custom-set-faces
+     '(default ((t (:family "Courier New" :foundry "outline" :slant normal :weight normal :height 195 :width normal)))))
+    )
+  ;;; Proxy
   (setq url-proxy-services '(
                              ("http" . "127.0.0.1:7890")
                              ("https" . "127.0.0.1:7890")))
   (when freedom/is-linux
     (when (not freedom/is-termux)
       (setq url-proxy-services '(
-                                 ("http" . "192.168.1.5:7890")
-                                 ("https" . "192.168.1.5:7890")))
+                                 ("http" . "192.168.1.8:7890")
+                                 ("https" . "192.168.1.8:7890")))
       )
     )
-  )
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; doom
-(use-package emacs
-  :ensure nil
-  :defer t
-  :config
   (defun freedom/sudo-this-file ()
     "Open the current file as root."
     (interactive)
@@ -108,10 +158,10 @@
               "sudo:root@" host
               ":" (or (file-remote-p file 'localname)
                       file))))
-
   (defun Myconfig ()
     (interactive)
     (find-file "~/.freedom.d/config.org"))
+
   )
 
 (use-package meow
@@ -299,10 +349,10 @@
     (meow-insert-exit)
     (corfu-quit))
 
-(defun +meow-visual ()
-  (interactive)
-  (meow-left-expand)
-  (meow-right-expand))
+  (defun +meow-visual ()
+    (interactive)
+    (meow-left-expand)
+    (meow-right-expand))
 
 
   )
@@ -319,10 +369,9 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; posframe
 (when (not freedom/is-termux)
-  (use-package posframe
-    :ensure t))
+  (use-package posframe :ensure t))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; emojify
 (when (not freedom/is-termux)
   (use-package emojify
@@ -357,113 +406,30 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; monokai-theme
-(use-package monokai-theme
-  :ensure t
-  )
+(use-package monokai-theme :ensure t)
 (use-package circadian
   :ensure t
-  ;; :config
-  ;; (setq circadian-themes '(("8:00" . monokai)
-  ;;                          ("17:30" . doom-mode)))
-  ;; (circadian-setup)
+  :config
+  (setq circadian-themes '(("8:00" . doom-one)
+                           ("17:30" . doom-one)))
+  (circadian-setup)
   )
 (use-package doom-themes
   :ensure t
   :hook (org-mode . doom-themes-org-config)
-  :config 
- (setq doom-theme 'doom-one)
+  :config
+  (setq doom-theme 'doom-one)
   )
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; doom-modeline
-(use-package all-the-icons
-    :ensure t)
+(use-package all-the-icons :ensure t)
 (use-package doom-modeline
-    :ensure t
-    :after all-the-icons
-    :pin elpa-local
-    :config
-    (doom-modeline-mode 1)
-    )
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; basic
-(use-package emacs
-  :ensure nil
-  :defer 0.5
+  :ensure t
+  :after all-the-icons
+  :pin elpa-local
   :config
-  ;; 设置Emacs标题
-  (setq frame-title-format '("Happy Emacs - %b")
-        icon-title-format frame-title-format)
-  ;; 光标闪烁
-  (setq blink-cursor-mode nil)
-  ;; 显示电池
-  (if (display-graphic-p)
-      (display-battery-mode 1))
-  ;; 空格代替制表符缩进
-  (setq-default indent-tabs-mode nil)
-  ;;高亮当前行
-  ;; (global-hl-line-mode 1)
-  ;;关闭启动画面
-  (setq inhibit-startup-message t)
-  ;;自动换行
-  (setq toggle-truncate-lines t)
-  ;;显示时间
-  (display-time-mode 1) ;; 常显
-  (setq display-time-24hr-format t) ;;格式
-  (setq display-time-day-and-date t) ;;显示时间、星期、日期
-  ;; 关闭启动帮助画面
-  (setq inhibit-splash-screen 1)
-  ;; 关闭备份文件
-  (setq make-backup-files nil)
-  ;; 取消备份
-  (setq create-lockfiles nil)
-  ;; 自动加载外部修改的文件
-  (global-auto-revert-mode 1)
-  ;; 关闭警告声
-  (setq ring-bell-function 'ignore)
-  ;; 设置 emacs 的配置
-  (setq auto-save-list-file-prefix (format "%sauto-save-list/.saves-" user-emacs-directory))
-  ;; 简化yes和no
-  (fset 'yes-or-no-p 'y-or-n-p)
-  ;;隐藏菜单栏工具栏滚动条
-  (menu-bar-mode 0)
-  (when freedom/is-linux
-    (when (not freedom/is-termux)
-      (tool-bar-mode 0)
-      (scroll-bar-mode 0)
-      (tooltip-mode 0)
-      ;; 调整启动时窗口大小/最大化/全屏
-      (set-face-attribute 'default nil :height 155)
-      (setq initial-frame-alist
-            '((top . 60) (left . 400) (width . 85) (height . 38)))
-      ;; (add-hook 'window-setup-hook #'toggle-frame-maximized t)
-      ;; (add-hook 'window-setup-hook #'toggle-frame-fullscreen t)
-      ;; )
-      ))
-  (when (string= "windows-nt" system-type)
-    (tool-bar-mode 0)
-    ;; 滚动条
-    (scroll-bar-mode 0)
-    (tooltip-mode 0)
-    )
-  (when (string= "darwin" system-type)
-    (tool-bar-mode 0)
-    (menu-bar-mode 1)
-    )
-  (when (string= "windows-nt" system-type)
-    ;; 调整启动时窗口位置/大小/最大化/全屏
-    (setq initial-frame-alist
-          '((top . 20) (left . 450) (width . 110) (height . 48)))
-    ;; (add-hook 'window-setup-hook #'toggle-frame-maximized t)
-    ;; (add-hook 'window-setup-hook #'toggle-frame-fullscreen t)
-    ;; )
-    )
-  (when (string= "darwin" system-type)
-    (custom-set-faces
-
-     '(default ((t (:family "Courier New" :foundry "outline" :slant normal :weight normal :height 195 :width normal)))))
-    )
+  (doom-modeline-mode 1)
   )
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -472,7 +438,7 @@
   :ensure t
   :defer 0.5
   :bind (:map vertico-map
-              ("DEL" . vertico-directory-delete-char))
+         ("DEL" . vertico-directory-delete-char))
   :config
   (vertico-mode t)
   (setq vertico-count 15))
@@ -489,28 +455,27 @@
 (use-package orderless
   :ensure t
   :defer 0.5
-  :init
+  :config
   (setq completion-styles '(orderless basic)
         completion-category-defaults nil
         completion-category-overrides '((file (styles partial-completion))))
   ;; 据说这样设置可以让 eglot corfu orderless
   ;; (setq completion-styles '(orderless flex)
   ;;       completion-category-overrides '((eglot (styles . (orderless flex)))))
+
+  ;; 对 vertico 进行拼音补全, 全拼的第一个字母
+  (defun completion--regex-pinyin (str)
+    (orderless-regexp (pinyinlib-build-regexp-string str)))
+  (add-to-list 'orderless-matching-styles 'completion--regex-pinyin)
   )
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Search content in the file
-(use-package consult
-  :ensure t
-  :defer 0.5)
+(use-package consult :ensure t :defer 0.5)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; 显示介绍
-(use-package marginalia
-  :ensure t
-  :defer 0.5
-  :config
-  (marginalia-mode))
+(use-package marginalia :ensure t :defer 0.5 :hook (after-init . marginalia-mode))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; ;; A few more useful configurations...
@@ -536,10 +501,9 @@
   ;; Enable recursive minibuffers
   (setq enable-recursive-minibuffers t))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (use-package org
-  :ensure t
-  :defer 0.5
+  :ensure nil
+  :hook '((org-mode . org-indent-mode))
   :custom
   ;; (org-ellipsis " ⭍")
   ;; (org-ellipsis " ⤵")
@@ -547,6 +511,7 @@
   (org-hide-leading-stars t)
   (org-hide-emphasis-markers t)
   :custom-face
+  ;; org 标题设置
   (org-level-1 ((t (:height 1.15))))
   (org-level-2 ((t (:height 1.13))))
   (org-level-3 ((t (:height 1.11))))
@@ -560,50 +525,8 @@
   (org-ellipsis ((t (:inherit 'fixed-pitch))))
   (org-property-value ((t (:inherit 'fixed-pitch))))
   (org-special-keyword ((t (:inherit 'fixed-pitch))))
-  )
-
-(use-package org
-  :ensure nil
-  :defer 0.5
   :config
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-  ;; Agenda Soure File
-  (when freedom/is-windows
-    (setq org-agenda-files (list
-                            "F:\\MyFile\\Org\\GTD"
-                            )))
-  (when freedom/is-linux
-    (setq org-agenda-files (list
-                            "~/MyFile/Org/GTD"
-                            )))
-  (when freedom/is-darwin
-    (setq org-agenda-files (list
-                            "~/Desktop/MyFile/Org/GTD"
-                            ))))
-
-(use-package org
-  :ensure nil
-  :defer 0.5
-  :config
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-  ;; TODO Configuration
-  ;; 设置任务流程(这是我的配置)
-  (setq org-todo-keywords
-        '((sequence "TODO(t)" "DOING(i)" "HANGUP(h)" "|" "DONE(d)" "CANCEL(c)")
-          (sequence "🚩(T)" "🏴(I)" "❓(H)" "|" "✔(D)" "✘(C)"))
-        org-todo-keyword-faces '(("HANGUP" . warning)
-                                 ("❓" . warning))
-        org-priority-faces '((?A . error)
-                             (?B . warning)
-                             (?C . success))
-        )
-  )
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-(use-package org
-  :ensure nil
-  :defer 0.5
-  :config
+  (setq org-imenu-depth 6) ;; consult-imenu 支持搜索到的标题深度
   ;;Windows系统日历乱码
   (setq system-time-locale "C")
   (format-time-string "%Y-%m-%d %a")
@@ -620,10 +543,6 @@
   (setq org-src-fontify-natively t)
   ;;不自动tab
   (setq org-src-tab-acts-natively nil)
-  ;; 直接运行语言支持
-  (org-babel-do-load-languages
-   'org-babel-load-languages
-   '((python . t)))
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   ;; org 图片设置
   ;;打开Org文件自动显示图片
@@ -632,6 +551,34 @@
   (setq org-image-actual-width (/ (display-pixel-width) 3))
   ;;图片显示 300 高度，如果图片小于 300，会被拉伸。
   (setq org-image-actual-width '(500))
+
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  ;; Agenda Soure File
+  (when freedom/is-windows
+    (setq org-agenda-files (list
+                            "F:\\MyFile\\Org\\GTD"
+                            )))
+  (when freedom/is-linux
+    (setq org-agenda-files (list
+                            "~/MyFile/Org/GTD"
+                            )))
+  (when freedom/is-darwin
+    (setq org-agenda-files (list
+                            "~/Desktop/MyFile/Org/GTD"
+                            )))
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  ;; TODO Configuration
+  ;; 设置任务流程(这是我的配置)
+  (setq org-todo-keywords
+        '((sequence "TODO(t)" "DOING(i)" "HANGUP(h)" "|" "DONE(d)" "CANCEL(c)")
+          (sequence "🚩(T)" "🏴(I)" "❓(H)" "|" "✔(D)" "✘(C)"))
+        org-todo-keyword-faces '(("HANGUP" . warning)
+                                 ("❓" . warning))
+        org-priority-faces '((?A . error)
+                             (?B . warning)
+                             (?C . success))
+        )
+
   )
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -639,7 +586,7 @@
 (use-package appt
   :ensure nil
   :defer 0.5
-  :hook (org-finalize-agenda . org-agenda-to-appt)
+  :hook (org-agenda-finalize . org-agenda-to-appt)
   :config
   ;; 每小时同步一次appt,并且现在就开始同步
   (run-at-time nil 3600 'org-agenda-to-appt)
@@ -662,8 +609,7 @@
   (setq appt-disp-window-function #'appt-disp-window-and-notification)
   )
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (use-package org
   :ensure nil
   :defer 0.5
@@ -813,8 +759,7 @@
       (org-end-of-subtree)))
   )
 
-(use-package ox-hugo
-  :ensure t)
+(use-package ox-hugo :ensure t)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; org-superstar 美化标题，表格，列表 之类的
@@ -827,10 +772,58 @@
   (org-superstar-item-bullet-alist '((43 . "⬧") (45 . "⬨")))
   )
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; org-roam
+(use-package org-roam
+  :ensure t
+  :commands (org-roam-node-find org-agenda org-capture org-mode)
+  :init
+  (when (string= "windows-nt" system-type)
+    (setq org-roam-directory (file-truename "F:\\MyFile\\Org")))
+  (when (string= "gnu/linux" system-type)
+    (setq org-roam-directory (file-truename "~/MyFile/Org/")))
+  (when (string= "darwin" system-type)
+    (setq org-roam-directory (file-truename "~/Desktop/MyFile/Org/")))
+  :config
+  ;;搜索
+  (setq org-roam-node-display-template "${title}")
+  ;;补全
+  (setq org-roam-completion-everywhere t)
+  ;;一个也可以设置org-roam-db-node-include-function。例如，ATTACH要从 Org-roam 数据库中排除所有带有标签的标题，可以设置：
+  (setq org-roam-db-node-include-function
+        (lambda ()
+          (not (member "ATTACH" (org-get-tags)))))
+  (setq org-roam-db-gc-threshold most-positive-fixnum)
+  ;; 创建左边显示子目录分类
+  (cl-defmethod org-roam-node-type ((node org-roam-node))
+    "Return the TYPE of NODE."
+    (condition-case nil
+        (file-name-nondirectory
+         (directory-file-name
+          (file-name-directory
+           (file-relative-name (org-roam-node-file node) org-roam-directory))))
+      (error "")))
+  (setq org-roam-node-display-template
+        (concat "${type:15} ${title:*} " (propertize "${tags:10}" 'face 'org-tag)))
+  (setq org-roam-db-update-on-save t)
+  ;; (org-roam-db-autosync-mode)
+  (setq org-roam-database-connector 'sqlite)
+  )
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; org-roam-ui
+(use-package org-roam-ui
+  :ensure t
+  :config
+  (setq org-roam-ui-sync-theme t
+        org-roam-ui-follow t
+        org-roam-ui-update-on-save t
+        org-roam-ui-open-on-start t)
+  )
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; org 标题加密， 只需添加 :crypt:
 (use-package org-crypt
-  :defer 1
+  :defer 0.5
   :ensure nil
   :config
   (org-crypt-use-before-save-magic)
@@ -851,15 +844,11 @@
   :ensure t
   :hook (after-init . projectile-mode)
   :config
-  (use-package ripgrep
-    :ensure t
-    :pin elpa-local)
-  (use-package projectile-ripgrep
-    :ensure t
-    :pin elpa-local)
+  (use-package ripgrep :ensure t :pin elpa-local)
+  (use-package projectile-ripgrep :ensure t :pin elpa-local)
   )
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; yasnippet 补全
 (use-package yasnippet
   :ensure t
@@ -875,26 +864,18 @@
           ))
   )
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; 快速点击各类链接
-(use-package ace-link
-  :ensure t
-  :config
-  (ace-link-setup-default))
+(use-package ace-link :ensure t :config (ace-link-setup-default))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Highlight some operations
-(use-package volatile-highlights
-  :ensure t
-  :diminish
-  :hook (after-init . volatile-highlights-mode)
-  )
+(use-package volatile-highlights :ensure t :diminish :hook (after-init . volatile-highlights-mode))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-(use-package magit
-  :ensure t)
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(use-package magit :ensure t)
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; diff 高亮
 (use-package diff-hl
   :ensure t
@@ -902,7 +883,7 @@
           (magit-pre-refresh . diff-hl-magit-pre-refresh)
           (magit-post-refresh . diff-hl-magit-post-refresh)))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; 高亮 symbol
 (use-package symbol-overlay
   :ensure t
@@ -917,7 +898,7 @@
          ([M-f3] . symbol-overlay-remove-all))
   )
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; 高亮括号匹配
 (use-package paren
   :ensure nil
@@ -926,7 +907,7 @@
   (setq show-paren-when-point-in-periphery t
         show-paren-when-point-inside-paren t))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (use-package undo-tree
   :ensure t
   :hook (after-init . global-undo-tree-mode)
@@ -946,32 +927,25 @@
   :bind (:map dired-mode-map
          ("U" . dired-up-directory))
   :config
-  (use-package all-the-icons-dired
-    :ensure t)
+  (use-package all-the-icons-dired :ensure t)
   )
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; aggressive-indent 自动缩进
-(use-package aggressive-indent
-  :ensure t
-  :hook (emacs-lisp-mode . aggressive-indent-mode)
-  )
+(use-package aggressive-indent :ensure t :hook (emacs-lisp-mode . aggressive-indent-mode))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; elec-pair 自动补全括号
 (use-package elec-pair
   :ensure nil
   :hook (after-init . electric-pair-mode)
   :init (setq electric-pair-inhibit-predicate 'electric-pair-conservative-inhibit))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; rainbow-delimiters 彩虹括号
-(use-package rainbow-delimiters
-  :ensure t
-  :hook (prog-mode . rainbow-delimiters-mode)
-  )
+(use-package rainbow-delimiters :ensure t :hook (prog-mode . rainbow-delimiters-mode))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; 指导线
 (use-package highlight-indent-guides
   :ensure t
@@ -992,10 +966,7 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; avy 单词跳跃
-(use-package avy
-  :ensure t
-  :defer 0.5
-  )
+(use-package avy :ensure t)
 (use-package ace-pinyin
   :defer 0.5
   :ensure t
@@ -1037,7 +1008,7 @@
   :init
   (setq url-queue-timeout 30
         elfeed-search-filter "@2-week-ago")
-  (setq elfeed-db-directory (concat freedom-emacs-directory ".local/.elfeed/db/"))
+  (setq elfeed-db-directory (concat user-emacs-directory ".local/.elfeed/db/"))
   :config
   ;; recentf 排除
   (when recentf-mode
@@ -1076,7 +1047,7 @@
   :config
   (setq corfu-auto-delay 0.1
         corfu-auto-prefix 2)
-    :config
+  :config
   (setq corfu-cycle t)                ;; Enable cycling for `corfu-next/previous'
   (setq corfu-auto t)                 ;; Enable auto completion
   (setq corfu-separator ?\s)          ;; Orderless field separator
@@ -1092,10 +1063,10 @@
 (use-package google-translate
   :ensure t
   :config
- (setq google-translate-default-source-language "auto"
-       google-translate-default-target-language "zh-CN")
- (setq google-translate-translation-directions-alist
-      '(("en" . "zh-CN") ("zh-CN" . "en")))
+  (setq google-translate-default-source-language "auto"
+        google-translate-default-target-language "zh-CN")
+  (setq google-translate-translation-directions-alist
+        '(("en" . "zh-CN") ("zh-CN" . "en")))
   )
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -1125,7 +1096,6 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; calfw
-
 (use-package calfw
   :ensure t
   :defer 0.5
@@ -1193,10 +1163,7 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; markdown-toc 生成目录
-(use-package markdown-toc
-  :ensure t
-  :hook (markdown-mode . markdown-toc-mode)
-  )
+(use-package markdown-toc :ensure t :hook (markdown-mode . markdown-toc-mode))
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; markdown-mode
 (use-package markdown-mode
@@ -1222,11 +1189,7 @@
     )
   ) ;; use-package end
 
-(use-package pyim-basedict
-  :ensure t
-  :pin elpa-local
-  )
-
+(use-package pyim-basedict :ensure t :pin elpa-local)
 (use-package pyim
   :ensure t
   :pin elpa-local
@@ -1288,14 +1251,10 @@
 
   );; pyim
 
-(use-package vimrc-mode
-  :ensure t
-  :config
+(use-package vimrc-mode :ensure t :config
   (add-to-list 'auto-mode-alist '("\\.vim\\(rc\\)?\\'" . vimrc-mode)))
 
-(use-package lsp-mode
-  :ensure t
-  :hook '((c-mode . lsp)))
+(use-package lsp-mode :ensure t :hook '((c-mode . lsp)))
 
 (use-package dumb-jump
   :ensure t
@@ -1306,83 +1265,3 @@
   :config
   (setq xref-show-definitions-function #'consult-xref
         xref-show-definitions-function #'consult-xref))
-
-(use-package restart-emacs
-  :ensure t)
-(use-package session
-  :ensure t
-  :hook '((after-init . recentf-mode)
-          (after-init . save-place-mode))
-  :init
-  (setq recentf-max-menu-items 20)
-  (setq recentf-max-saved-items 20)
-  (defun sanityinc/time-subtract-millis (b a)
-    (* 1000.0 (float-time (time-subtract b a))))
-
-  ;; save a list of open files in ~/.emacs.d/.emacs.desktop
-  (setq desktop-path (list user-emacs-directory)
-        desktop-auto-save-timeout 600)
-  (desktop-save-mode 1)
-
-  (defun sanityinc/desktop-time-restore (orig &rest args)
-    (let ((start-time (current-time)))
-      (prog1
-          (apply orig args)
-        (message "Desktop restored in %.2fms"
-                 (sanityinc/time-subtract-millis (current-time)
-                                                 start-time)))))
-  (advice-add 'desktop-read :around 'sanityinc/desktop-time-restore)
-
-  (defun sanityinc/desktop-time-buffer-create (orig ver filename &rest args)
-    (let ((start-time (current-time)))
-      (prog1
-          (apply orig ver filename args)
-        (message "Desktop: %.2fms to restore %s"
-                 (sanityinc/time-subtract-millis (current-time)
-                                                 start-time)
-                 (when filename
-                   (abbreviate-file-name filename))))))
-  (advice-add 'desktop-create-buffer :around 'sanityinc/desktop-time-buffer-create)
-
-  
-  ;; Restore histories and registers after saving
-
-  (setq-default history-length 1000)
-
-  ;; (require-package 'session)
-
-  (setq session-save-file (locate-user-emacs-file ".session"))
-  (setq session-name-disable-regexp "\\(?:\\`'/tmp\\|\\.git/[A-Z_]+\\'\\)")
-  (setq session-save-file-coding-system 'utf-8)
-
-  (add-hook 'after-init-hook 'session-initialize)
-
-  ;; save a bunch of variables to the desktop file
-  ;; for lists specify the len of the maximal saved data also
-  (setq desktop-globals-to-save
-        '((comint-input-ring        . 50)
-          (compile-history          . 30)
-          desktop-missing-file-warning
-          (dired-regexp-history     . 20)
-          (extended-command-history . 30)
-          (face-name-history        . 20)
-          (file-name-history        . 100)
-          (grep-find-history        . 30)
-          (grep-history             . 30)
-          (ivy-history              . 100)
-          (magit-revision-history   . 50)
-          (minibuffer-history       . 50)
-          (org-clock-history        . 50)
-          (org-refile-history       . 50)
-          (org-tags-history         . 50)
-          (query-replace-history    . 60)
-          (read-expression-history  . 60)
-          (regexp-history           . 60)
-          (regexp-search-ring       . 20)
-          register-alist
-          (search-ring              . 20)
-          (shell-command-history    . 50)
-          tags-file-name
-          tags-table-list))
-  )
-;;; init-sessions.el ends here

@@ -1,13 +1,13 @@
 * Freedom Emacs
 ** Info
-   ⚠ 这是个人配置，不建议其他人使用 ⚠
+⚠ 这是个人配置，不建议其他人使用 ⚠
 ** 安装
 + git clone https://github.com/ISouthRain/.freedom.d
-- mv ~/.emacs.d ~/.emacs.d.bk
 + mkdir -p ~/.emacs.d
 + cp ~/.freedom.d/init.el ~/.emacs.d/
 ** Configure
 *** Package-archives
+
 #+begin_src emacs-lisp :tangle yes
 (eval-and-compile
   (customize-set-variable
@@ -64,90 +64,32 @@
   )
 #+end_src
 
-*** Emacs Basic
+*** Basci 基础设置, 文件编码
 #+begin_src emacs-lisp :tangle yes
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; basic
 (use-package emacs
   :ensure nil
-  :defer 0.5
+  :defer t
   :config
-  ;; 设置Emacs标题
-  (setq frame-title-format '("Happy Emacs - %b")
-        icon-title-format frame-title-format)
-  ;; 光标闪烁
-  ;; (setq blink-cursor-mode t)
-  ;; 显示电池
-  (if (display-graphic-p)
-      (display-battery-mode 1))
-  ;; 空格代替制表符缩进
-  (setq-default indent-tabs-mode nil)
-  ;;高亮当前行
-  (global-hl-line-mode 1)
-  ;;关闭启动画面
-  (setq inhibit-startup-message t)
-  ;;自动换行
-  (setq toggle-truncate-lines t)
-  ;; 行号
-  (setq display-line-numbers 'relative
-        display-line-numbers-type 'relative)
-  (setq display-line-numbers-width 3
-        display-line-numbers-widen 1)
-  (global-display-line-numbers-mode t)
-  ;;显示时间
-  (setq display-time-mode t) ;; 常显
-  (setq display-time-24hr-format t) ;;格式
-  (setq display-time-day-and-date t) ;;显示时间、星期、日期
-  ;; 关闭启动帮助画面
-  (setq inhibit-splash-screen 1)
-  ;; 关闭备份文件
-  (setq make-backup-files nil)
-  ;; 取消备份
-  (setq create-lockfiles nil)
-  ;; 自动加载外部修改的文件
-  (global-auto-revert-mode 1)
-  ;; 关闭警告声
-  (setq ring-bell-function 'ignore)
-  ;; 简化yes和no
-  (fset 'yes-or-no-p 'y-or-n-p)
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   ;; 设置编码
   (setq default-buffer-file-coding-system 'utf-8)
   (prefer-coding-system 'utf-8)
   (set-default-coding-systems 'utf-8)
   ;; 关闭 native-comp 错误警告
+  ;; Silence compiler warnings as they can be pretty disruptive
   (setq comp-async-report-warnings-errors nil)
   ;; 为防止不小心按到C-c C-x,在退出Emacs前需要确认
-  (setq confirm-kill-emacs (lambda (prompt) (y-or-n-p-with-timeout "Quit Emacs:)  " 60 "y")))
+  (setq confirm-kill-emacs (lambda (prompt) (y-or-n-p-with-timeout "是否退出Emacs:(" 60 "y")))
 
-  ;;隐藏菜单栏工具栏滚动条
-  (menu-bar-mode 0)
-  (tool-bar-mode 0)
-  (scroll-bar-mode 0)
-  (tooltip-mode 0)
-  (when freedom/is-linux
-    (when (not freedom/is-termux)
-      ;; 调整启动时窗口大小/最大化/全屏
-      (set-face-attribute 'default nil :height 155)
-      (setq initial-frame-alist
-            '((top . 60) (left . 400) (width . 85) (height . 38)))
-      ;; (add-hook 'window-setup-hook #'toggle-frame-maximized t)
-      ;; (add-hook 'window-setup-hook #'toggle-frame-fullscreen t)
-      ;; )
-      ))
-  (when (string= "windows-nt" system-type)
-    ;; 调整启动时窗口位置/大小/最大化/全屏
-    (setq initial-frame-alist
-          '((top . 20) (left . 450) (width . 110) (height . 48)))
-    ;; (add-hook 'window-setup-hook #'toggle-frame-maximized t)
-    ;; (add-hook 'window-setup-hook #'toggle-frame-fullscreen t)
-    ;; )
-    )
-  (when (string= "darwin" system-type)
-    (custom-set-faces
-     '(default ((t (:family "Courier New" :foundry "outline" :slant normal :weight normal :height 195 :width normal)))))
-    )
-  ;;; Proxy
+  )
+#+end_src
+
+*** Proxy Emacs
+#+begin_src emacs-lisp :tangle yes
+(use-package emacs
+  :ensure nil
+  :defer t
+  :config
   (setq url-proxy-services '(
                              ("http" . "127.0.0.1:7890")
                              ("https" . "127.0.0.1:7890")))
@@ -158,7 +100,17 @@
                                  ("https" . "192.168.1.8:7890")))
       )
     )
+  )
+#+end_src
 
+*** Function 自定义函数
+#+begin_src emacs-lisp :tangle yes
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; doom
+(use-package emacs
+  :ensure nil
+  :defer t
+  :config
   (defun freedom/sudo-this-file ()
     "Open the current file as root."
     (interactive)
@@ -182,7 +134,6 @@
   (defun Myconfig ()
     (interactive)
     (find-file "~/.freedom.d/config.org"))
-
   )
 #+end_src
 
@@ -401,12 +352,13 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; posframe
 (when (not freedom/is-termux)
-  (use-package posframe :ensure t))
+  (use-package posframe
+    :ensure t))
 #+end_src
 
 **** emojify
 #+begin_src emacs-lisp :tangle yes
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; emojify
 (when (not freedom/is-termux)
   (use-package emojify
@@ -443,16 +395,18 @@
   )
 #+end_src
 
-**** Theme 主题
+**** theme 主题
 #+begin_src emacs-lisp :tangle yes
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; monokai-theme
-(use-package monokai-theme :ensure t)
+(use-package monokai-theme
+  :ensure t
+  )
 (use-package circadian
   :ensure t
   :config
-  (setq circadian-themes '(("8:00" . doom-one)
-                           ("17:30" . doom-one)))
+  (setq circadian-themes '(("8:00" . doom-mode)
+                           ("17:30" . doom-mode)))
   (circadian-setup)
   )
 (use-package doom-themes
@@ -467,13 +421,97 @@
 #+begin_src emacs-lisp :tangle yes
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; doom-modeline
-(use-package all-the-icons :ensure t)
+(use-package all-the-icons
+  :ensure t)
 (use-package doom-modeline
   :ensure t
   :after all-the-icons
   :pin elpa-local
   :config
   (doom-modeline-mode 1)
+  )
+#+end_src
+
+**** basic 基础设置
+#+begin_src emacs-lisp :tangle yes
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; basic
+(use-package emacs
+  :ensure nil
+  :defer 0.5
+  :config
+  ;; 设置Emacs标题
+  (setq frame-title-format '("Happy Emacs - %b")
+        icon-title-format frame-title-format)
+  ;; 光标闪烁
+  (setq blink-cursor-mode nil)
+  ;; 显示电池
+  (if (display-graphic-p)
+      (display-battery-mode 1))
+  ;; 空格代替制表符缩进
+  (setq-default indent-tabs-mode nil)
+  ;;高亮当前行
+  ;; (global-hl-line-mode 1)
+  ;;关闭启动画面
+  (setq inhibit-startup-message t)
+  ;;自动换行
+  (setq toggle-truncate-lines t)
+  ;;显示时间
+  (display-time-mode 1) ;; 常显
+  (setq display-time-24hr-format t) ;;格式
+  (setq display-time-day-and-date t) ;;显示时间、星期、日期
+  ;; 关闭启动帮助画面
+  (setq inhibit-splash-screen 1)
+  ;; 关闭备份文件
+  (setq make-backup-files nil)
+  ;; 取消备份
+  (setq create-lockfiles nil)
+  ;; 自动加载外部修改的文件
+  (global-auto-revert-mode 1)
+  ;; 关闭警告声
+  (setq ring-bell-function 'ignore)
+  ;; 设置 emacs 的配置
+  (setq auto-save-list-file-prefix (format "%sauto-save-list/.saves-" user-emacs-directory))
+  ;; 简化yes和no
+  (fset 'yes-or-no-p 'y-or-n-p)
+  ;;隐藏菜单栏工具栏滚动条
+  (menu-bar-mode 0)
+  (when freedom/is-linux
+    (when (not freedom/is-termux)
+      (tool-bar-mode 0)
+      (scroll-bar-mode 0)
+      (tooltip-mode 0)
+      ;; 调整启动时窗口大小/最大化/全屏
+      (set-face-attribute 'default nil :height 155)
+      (setq initial-frame-alist
+            '((top . 60) (left . 400) (width . 85) (height . 38)))
+      ;; (add-hook 'window-setup-hook #'toggle-frame-maximized t)
+      ;; (add-hook 'window-setup-hook #'toggle-frame-fullscreen t)
+      ;; )
+      ))
+  (when (string= "windows-nt" system-type)
+    (tool-bar-mode 0)
+    ;; 滚动条
+    (scroll-bar-mode 0)
+    (tooltip-mode 0)
+    )
+  (when (string= "darwin" system-type)
+    (tool-bar-mode 0)
+    (menu-bar-mode 1)
+    )
+  (when (string= "windows-nt" system-type)
+    ;; 调整启动时窗口位置/大小/最大化/全屏
+    (setq initial-frame-alist
+          '((top . 20) (left . 450) (width . 110) (height . 48)))
+    ;; (add-hook 'window-setup-hook #'toggle-frame-maximized t)
+    ;; (add-hook 'window-setup-hook #'toggle-frame-fullscreen t)
+    ;; )
+    )
+  (when (string= "darwin" system-type)
+    (custom-set-faces
+
+     '(default ((t (:family "Courier New" :foundry "outline" :slant normal :weight normal :height 195 :width normal)))))
+    )
   )
 #+end_src
 
@@ -527,14 +565,20 @@
 #+begin_src emacs-lisp :tangle yes
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Search content in the file
-(use-package consult :ensure t :defer 0.5)
+(use-package consult
+  :ensure t
+  :defer 0.5)
 #+end_src
 
 **** marginalia
 #+begin_src emacs-lisp :tangle yes
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; 显示介绍
-(use-package marginalia :ensure t :defer 0.5 :hook (after-init . marginalia-mode))
+(use-package marginalia
+  :ensure t
+  :defer 0.5
+  :config
+  (marginalia-mode))
 #+end_src
 
 **** search 扩展
@@ -565,11 +609,12 @@
 #+end_src
 
 *** Org-mode
-**** Org Basic config
+**** org-mode 标题大小
 #+begin_src emacs-lisp :tangle yes
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (use-package org
-  :ensure nil
-  :hook '((org-mode . org-indent-mode))
+  :ensure t
+  :defer 0.5
   :custom
   ;; (org-ellipsis " ⭍")
   ;; (org-ellipsis " ⤵")
@@ -577,7 +622,6 @@
   (org-hide-leading-stars t)
   (org-hide-emphasis-markers t)
   :custom-face
-  ;; org 标题设置
   (org-level-1 ((t (:height 1.15))))
   (org-level-2 ((t (:height 1.13))))
   (org-level-3 ((t (:height 1.11))))
@@ -591,8 +635,59 @@
   (org-ellipsis ((t (:inherit 'fixed-pitch))))
   (org-property-value ((t (:inherit 'fixed-pitch))))
   (org-special-keyword ((t (:inherit 'fixed-pitch))))
+  )
+#+end_src
+
+**** Agenda 文件来源
+#+begin_src emacs-lisp :tangle yes
+(use-package org
+  :ensure nil
+  :defer 0.5
   :config
-  (setq org-imenu-depth 6) ;; consult-imenu 支持搜索到的标题深度
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  ;; Agenda Soure File
+  (when freedom/is-windows
+    (setq org-agenda-files (list
+                            "F:\\MyFile\\Org\\GTD"
+                            )))
+  (when freedom/is-linux
+    (setq org-agenda-files (list
+                            "~/MyFile/Org/GTD"
+                            )))
+  (when freedom/is-darwin
+    (setq org-agenda-files (list
+                            "~/Desktop/MyFile/Org/GTD"
+                            ))))
+#+end_src
+
+**** Task cycle
+#+begin_src emacs-lisp :tangle yes
+(use-package org
+  :ensure nil
+  :defer 0.5
+  :config
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  ;; TODO Configuration
+  ;; 设置任务流程(这是我的配置)
+  (setq org-todo-keywords
+        '((sequence "TODO(t)" "DOING(i)" "HANGUP(h)" "|" "DONE(d)" "CANCEL(c)")
+          (sequence "🚩(T)" "🏴(I)" "❓(H)" "|" "✔(D)" "✘(C)"))
+        org-todo-keyword-faces '(("HANGUP" . warning)
+                                 ("❓" . warning))
+        org-priority-faces '((?A . error)
+                             (?B . warning)
+                             (?C . success))
+        )
+  )
+#+end_src
+
+**** Basic org
+#+begin_src emacs-lisp :tangle yes
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(use-package org
+  :ensure nil
+  :defer 0.5
+  :config
   ;;Windows系统日历乱码
   (setq system-time-locale "C")
   (format-time-string "%Y-%m-%d %a")
@@ -609,6 +704,10 @@
   (setq org-src-fontify-natively t)
   ;;不自动tab
   (setq org-src-tab-acts-natively nil)
+  ;; 直接运行语言支持
+  (org-babel-do-load-languages
+   'org-babel-load-languages
+   '((python . t)))
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   ;; org 图片设置
   ;;打开Org文件自动显示图片
@@ -617,44 +716,17 @@
   (setq org-image-actual-width (/ (display-pixel-width) 3))
   ;;图片显示 300 高度，如果图片小于 300，会被拉伸。
   (setq org-image-actual-width '(500))
-
-  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-  ;; Agenda Soure File
-  (when freedom/is-windows
-    (setq org-agenda-files (list
-                            "F:\\MyFile\\Org\\GTD"
-                            )))
-  (when freedom/is-linux
-    (setq org-agenda-files (list
-                            "~/MyFile/Org/GTD"
-                            )))
-  (when freedom/is-darwin
-    (setq org-agenda-files (list
-                            "~/Desktop/MyFile/Org/GTD"
-                            )))
-  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-  ;; TODO Configuration
-  ;; 设置任务流程(这是我的配置)
-  (setq org-todo-keywords
-        '((sequence "TODO(t)" "DOING(i)" "HANGUP(h)" "|" "DONE(d)" "CANCEL(c)")
-          (sequence "🚩(T)" "🏴(I)" "❓(H)" "|" "✔(D)" "✘(C)"))
-        org-todo-keyword-faces '(("HANGUP" . warning)
-                                 ("❓" . warning))
-        org-priority-faces '((?A . error)
-                             (?B . warning)
-                             (?C . success))
-        )
-
   )
 #+end_src
-**** Org Appt 通知
+
+**** Appt 通知
 #+begin_src emacs-lisp :tangle yes
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; org 通知设置
 (use-package appt
   :ensure nil
   :defer 0.5
-  :hook (org-agenda-finalize . org-agenda-to-appt)
+  :hook (org-finalize-agenda . org-agenda-to-appt)
   :config
   ;; 每小时同步一次appt,并且现在就开始同步
   (run-at-time nil 3600 'org-agenda-to-appt)
@@ -680,7 +752,8 @@
 
 **** org-capture
 #+begin_src emacs-lisp :tangle yes
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;
 (use-package org
   :ensure nil
   :defer 0.5
@@ -833,7 +906,8 @@
 
 **** ox-hugo
 #+begin_src emacs-lisp :tangle yes
-(use-package ox-hugo :ensure t)
+(use-package ox-hugo
+  :ensure t)
 #+end_src
 
 **** org-superstar
@@ -851,7 +925,7 @@
 #+end_src
 
 **** org-roam
-#+begin_src emacs-lisp :tangle yes
+#+begin_src emacs-lisp :tangle no
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; org-roam
 (use-package org-roam
@@ -907,7 +981,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; org 标题加密， 只需添加 :crypt:
 (use-package org-crypt
-  :defer 0.5
+  :defer 1
   :ensure nil
   :config
   (org-crypt-use-before-save-magic)
@@ -933,14 +1007,18 @@
   :ensure t
   :hook (after-init . projectile-mode)
   :config
-  (use-package ripgrep :ensure t :pin elpa-local)
-  (use-package projectile-ripgrep :ensure t :pin elpa-local)
+  (use-package ripgrep
+    :ensure t
+    :pin elpa-local)
+  (use-package projectile-ripgrep
+    :ensure t
+    :pin elpa-local)
   )
 #+end_src
 
 **** yasnippet
 #+begin_src emacs-lisp :tangle yes
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; yasnippet 补全
 (use-package yasnippet
   :ensure t
@@ -959,27 +1037,35 @@
 
 **** ace-link
 #+begin_src emacs-lisp :tangle yes
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; 快速点击各类链接
-(use-package ace-link :ensure t :config (ace-link-setup-default))
+(use-package ace-link
+  :ensure t
+  :config
+  (ace-link-setup-default))
 #+end_src
 
 **** volatile-hights
 #+begin_src emacs-lisp :tangle yes
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Highlight some operations
-(use-package volatile-highlights :ensure t :diminish :hook (after-init . volatile-highlights-mode))
+(use-package volatile-highlights
+  :ensure t
+  :diminish
+  :hook (after-init . volatile-highlights-mode)
+  )
 #+end_src
 
 **** magit
 #+begin_src emacs-lisp :tangle yes
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-(use-package magit :ensure t)
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(use-package magit
+  :ensure t)
 #+end_src
 
 **** diff-hl
 #+begin_src emacs-lisp :tangle yes
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; diff 高亮
 (use-package diff-hl
   :ensure t
@@ -990,7 +1076,7 @@
 
 **** symbol-overlay
 #+begin_src emacs-lisp :tangle yes
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; 高亮 symbol
 (use-package symbol-overlay
   :ensure t
@@ -1006,9 +1092,9 @@
   )
 #+end_src
 
-**** paren 高亮括号匹配
+**** paren
 #+begin_src emacs-lisp :tangle yes
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; 高亮括号匹配
 (use-package paren
   :ensure nil
@@ -1020,7 +1106,7 @@
 
 **** undo-tree
 #+begin_src emacs-lisp :tangle yes
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (use-package undo-tree
   :ensure t
   :hook (after-init . global-undo-tree-mode)
@@ -1043,7 +1129,8 @@
   :bind (:map dired-mode-map
          ("U" . dired-up-directory))
   :config
-  (use-package all-the-icons-dired :ensure t)
+  (use-package all-the-icons-dired
+    :ensure t)
   )
 #+end_src
 
@@ -1051,12 +1138,15 @@
 #+begin_src emacs-lisp :tangle yes
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; aggressive-indent 自动缩进
-(use-package aggressive-indent :ensure t :hook (emacs-lisp-mode . aggressive-indent-mode))
+(use-package aggressive-indent
+  :ensure t
+  :hook (emacs-lisp-mode . aggressive-indent-mode)
+  )
 #+end_src
 
-**** elec-pair 括号补全
+**** elec-pair
 #+begin_src emacs-lisp :tangle yes
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; elec-pair 自动补全括号
 (use-package elec-pair
   :ensure nil
@@ -1066,14 +1156,17 @@
 
 **** rainbow-delimiters
 #+begin_src emacs-lisp :tangle yes
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; rainbow-delimiters 彩虹括号
-(use-package rainbow-delimiters :ensure t :hook (prog-mode . rainbow-delimiters-mode))
+(use-package rainbow-delimiters
+  :ensure t
+  :hook (prog-mode . rainbow-delimiters-mode)
+  )
 #+end_src
 
 **** higlight-indent-guides
 #+begin_src emacs-lisp :tangle yes
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; 指导线
 (use-package highlight-indent-guides
   :ensure t
@@ -1100,7 +1193,10 @@
 #+begin_src emacs-lisp :tangle yes
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; avy 单词跳跃
-(use-package avy :ensure t)
+(use-package avy
+  :ensure t
+  :defer 0.5
+  )
 (use-package ace-pinyin
   :defer 0.5
   :ensure t
@@ -1180,11 +1276,9 @@
          ("C-M-i"     . company-complete)
          :map company-mode-map
          ("<backtab>" . company-yasnippet)
-         ("C-p" . company-select-previous)
-         ("C-n" . company-select-next)
-         ("TAB" . company-select-next)
          :map company-active-map
-         ("<backtab>" . company-yasnippet)
+         ("<backtab>" . company-select-previous)
+         ("<TAB>" . company-select-next)
          )
   :commands (company-complete-common
              company-complete-common-or-cycle
@@ -1314,7 +1408,7 @@
               ((boundp sym)   'ElispVariable)
               ((featurep sym) 'ElispFeature)
               ((facep sym)    'ElispFace)))))
-  )
+)
 
 (use-package company-dict
   :defer t
@@ -1330,7 +1424,7 @@
 #+end_src
 
 **** corfu
-#+begin_src emacs-lisp :tangle yes
+#+begin_src emacs-lisp :tangle no
 (use-package corfu
   :ensure t
   :defer 0.5
@@ -1448,6 +1542,7 @@
 #+begin_src emacs-lisp :tangle yes
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; calfw
+
 (use-package calfw
   :ensure t
   :defer 0.5
@@ -1518,7 +1613,10 @@
 #+begin_src emacs-lisp :tangle yes
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; markdown-toc 生成目录
-(use-package markdown-toc :ensure t :hook (markdown-mode . markdown-toc-mode))
+(use-package markdown-toc
+  :ensure t
+  :hook (markdown-mode . markdown-toc-mode)
+  )
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; markdown-mode
 (use-package markdown-mode
@@ -1549,7 +1647,11 @@
 
 *** Pyim
 #+begin_src emacs-lisp :tangle yes
-(use-package pyim-basedict :ensure t :pin elpa-local)
+(use-package pyim-basedict
+  :ensure t
+  :pin elpa-local
+  )
+
 (use-package pyim
   :ensure t
   :pin elpa-local
@@ -1614,7 +1716,9 @@
 
 *** Vim
 #+begin_src emacs-lisp :tangle yes
-(use-package vimrc-mode :ensure t :config
+(use-package vimrc-mode
+  :ensure t
+  :config
   (add-to-list 'auto-mode-alist '("\\.vim\\(rc\\)?\\'" . vimrc-mode)))
 
 #+end_src
@@ -1622,7 +1726,9 @@
 *** Lsp-mode
 **** lsp-mode
 #+begin_src emacs-lisp :tangle yes
-(use-package lsp-mode :ensure t :hook '((c-mode . lsp)))
+(use-package lsp-mode
+  :ensure t
+  :hook '((c-mode . lsp)))
 #+end_src
 
 **** dumb-jump
@@ -1640,7 +1746,7 @@
 #+end_src
 
 *** Sessions
-#+begin_src emacs-lisp :tangle no
+#+begin_src emacs-lisp :tangle yes
 (use-package restart-emacs
   :ensure t)
 (use-package session
