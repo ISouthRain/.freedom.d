@@ -1,7 +1,7 @@
 * Freedom Emacs
 ** Info
-   ⚠ 这是个人配置，不建议其他人使用 ⚠
-** 安装
+⚠ 这是个人配置，不建议其他人使用 ⚠
+** Use guide
 + git clone https://github.com/ISouthRain/.freedom.d
 - mv ~/.emacs.d ~/.emacs.d.bk
 + mkdir -p ~/.emacs.d
@@ -77,8 +77,9 @@
   ;; 设置Emacs标题
   (setq frame-title-format '("Happy Emacs - %b")
         icon-title-format frame-title-format)
+  (find-file-read-only "~/.freedom.d/logo.txt")
   ;; 光标闪烁
-  ;; (setq blink-cursor-mode t)
+  (blink-cursor-mode 0)
   ;; 显示电池
   (if (display-graphic-p)
       (display-battery-mode 1))
@@ -89,7 +90,7 @@
   ;;关闭启动画面
   (setq inhibit-startup-message t)
   ;;自动换行
-  (setq toggle-truncate-lines t)
+  (toggle-truncate-lines 1)
   ;; 行号
   (setq display-line-numbers 'relative
         display-line-numbers-type 'relative)
@@ -133,7 +134,7 @@
       ;; 调整启动时窗口大小/最大化/全屏
       (set-face-attribute 'default nil :height 155)
       (setq initial-frame-alist
-            '((top . 60) (left . 400) (width . 85) (height . 38)))
+            '((top . 60) (left . 400) (width . 88) (height . 39)))
       ;; (add-hook 'window-setup-hook #'toggle-frame-maximized t)
       ;; (add-hook 'window-setup-hook #'toggle-frame-fullscreen t)
       ;; )
@@ -157,11 +158,11 @@
   (when freedom/is-linux
     (when (not freedom/is-termux)
       (setq url-proxy-services '(
-                                 ("http" . "192.168.1.8:7890")
-                                 ("https" . "192.168.1.8:7890")))
+                                 ("http" . "192.168.1.3:7890")
+                                 ("https" . "192.168.1.3:7890")))
       )
     )
-
+;;; function
   (defun freedom/sudo-this-file ()
     "Open the current file as root."
     (interactive)
@@ -439,7 +440,7 @@
     (cnfonts-mode)
     (cnfonts-set-font)
     )
-  (setq cnfonts-personal-fontnames '(("Consolas" "Iosevka" "Bookerly" "Constantia" "PragmataPro Mono Liga" "Go Mono" "Fira Code" "Ubuntu Mono" "SF Mono");; 英文
+  (setq cnfonts-personal-fontnames '(("Iosevka" "Consolas" "Bookerly" "Constantia" "PragmataPro Mono Liga" "Go Mono" "Fira Code" "Ubuntu Mono" "SF Mono");; 英文
                                      ("霞鹜文楷" "霞鹜文楷等宽" "微软雅黑" "Sarasa Mono SC Nerd" "Bookerly" "M 盈黑 PRC W5" "方正聚珍新仿简繁" "苹方 常规" "苹方 中等" "M 盈黑 PRC W4" "PragmataPro Mono Liga");; 中文
                                      ("Simsun-ExtB" "Bookerly" "方正聚珍新仿简繁" "PragmataPro Mono Liga");; EXT-B
                                      ("Segoe UI Symbol" "Bookerly" "PragmataPro Mono Liga")));; 字符
@@ -450,21 +451,17 @@
 **** Theme 主题
 #+begin_src emacs-lisp :tangle yes
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; monokai-theme
-(use-package monokai-theme :ensure t)
-(use-package circadian
-  :ensure t
-  :config
-  (setq circadian-themes '(("8:00" . doom-one)
-                           ("17:30" . doom-one)))
-  (circadian-setup)
-  )
+;; (use-package circadian
+;;   :ensure t
+;;   :config
+;;   (setq circadian-themes '(("8:00" . doom-one)
+;;                            ("17:30" . doom-one)))
+;;   (circadian-setup)
+;;   )
 (use-package doom-themes
   :ensure t
-  :hook (org-mode . doom-themes-org-config)
   :config
-  (setq doom-theme 'doom-one)
-  )
+  (load-theme 'doom-one t))
 #+end_src
 
 **** doom-modeline
@@ -481,6 +478,19 @@
   )
 #+end_src
 
+**** helpful
+#+begin_src emacs-lisp :tangle yes
+(use-package helpful
+  :ensure t
+  :bind (("C-h f" . helpful-callable)
+         ("C-h v" . helpful-variable)
+         ("C-h k" . helpful-key)
+         ("C-h C-d" . helpful-at-point)
+         ("C-h F" . helpful-function)
+         ("C-h C" . helpful-command)
+         )
+  )
+#+end_src
 **** vertico
 #+begin_src emacs-lisp :tangle yes
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -543,7 +553,7 @@
 
 **** search 扩展
 #+begin_src emacs-lisp :tangle yes
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; ;; A few more useful configurations...
 (use-package emacs
   :defer 0.5
@@ -580,22 +590,7 @@
   (org-pretty-entities t)
   (org-hide-leading-stars t)
   (org-hide-emphasis-markers t)
-  ;; :custom-face
-  ;; ;; org 标题设置
-  ;; (org-level-1 ((t (:height 1.15))))
-  ;; (org-level-2 ((t (:height 1.13))))
-  ;; (org-level-3 ((t (:height 1.11))))
-  ;; (org-level-4 ((t (:height 1.09))))
-  ;; (org-level-5 ((t (:height 1.07))))
-  ;; (org-level-6 ((t (:height 1.05))))
-  ;; (org-level-7 ((t (:height 1.03))))
-  ;; (org-level-8 ((t (:height 1.01))))
-  ;; (org-todo ((t (:inherit 'fixed-pitch))))
-  ;; (org-done ((t (:inherit 'fixed-pitch))))
-  ;; (org-ellipsis ((t (:inherit 'fixed-pitch))))
-  ;; (org-property-value ((t (:inherit 'fixed-pitch))))
-  ;; (org-special-keyword ((t (:inherit 'fixed-pitch))))
-  :config
+   :config
   (setq org-imenu-depth 6) ;; consult-imenu 支持搜索到的标题深度
   ;;Windows系统日历乱码
   (setq system-time-locale "C")
@@ -890,7 +885,7 @@
   (setq org-roam-node-display-template
         (concat "${type:15} ${title:*} " (propertize "${tags:10}" 'face 'org-tag)))
   (setq org-roam-db-update-on-save t)
-  ;; (org-roam-db-autosync-mode)
+  ;; (org-roam-db-autosync-mode 1)
   (setq org-roam-database-connector 'sqlite)
   )
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -992,6 +987,14 @@
           "~/.freedom.d/snippets"
           ))
   )
+#+end_src
+
+***** doom-snippets
+#+begin_src emacs-lisp :tangle no
+(use-package doom-snippets
+  :ensure nil
+  :load-path "~/.freedom.d/core/plugins/doom-snippets"
+  :after yasnippet)
 #+end_src
 
 **** ace-link
@@ -1201,9 +1204,8 @@
 ;; elfeed-org
 (use-package elfeed-org
   :ensure t
-  :commands (elfeed)
+  :hook (elfeed-search . elfeed-org)
   :init
-  (elfeed-org)
   (setq rmh-elfeed-org-files (list (expand-file-name "elfeed.org" freedom-emacs-directory)))
   )
 #+end_src
@@ -1414,19 +1416,19 @@ nil means disabled."
 
 *** Complation 补全
 **** company
-#+begin_src emacs-lisp :tangle no
+#+begin_src emacs-lisp :tangle yes
 (use-package company
   :ensure t
-  :bind (("M-/"       . company-complete)
-         ("C-M-i"     . company-complete)
-         :map company-mode-map
-         ("<backtab>" . company-yasnippet)
-         ("C-p" . company-select-previous)
-         ("C-n" . company-select-next)
-         ("TAB" . company-select-next)
-         :map company-active-map
-         ("<backtab>" . company-yasnippet)
-         )
+  ;; :bind (("M-/"       . company-complete)
+  ;;        ("C-M-i"     . company-complete)
+  ;;        :map company-mode-map
+  ;;        ("<backtab>" . company-yasnippet)
+  ;;        ("C-p" . company-select-previous)
+  ;;        ("C-n" . company-select-next)
+  ;;        ("TAB" . company-select-next)
+  ;;        :map company-active-map
+  ;;        ("<backtab>" . company-yasnippet)
+  ;;        )
   :commands (company-complete-common
              company-complete-common-or-cycle
              company-manual-begin
@@ -1571,7 +1573,7 @@ nil means disabled."
 #+end_src
 
 **** corfu
-#+begin_src emacs-lisp :tangle yes
+#+begin_src emacs-lisp :tangle no
 (use-package corfu
   :ensure t
   :defer 0.5
@@ -1591,6 +1593,13 @@ nil means disabled."
    ;; ("SPC" . corfu-insert-separator) ;; 空格后依然补全
    )
   :config
+  (setq global-corfu-mode
+        '(not erc-mode
+              circe-mode
+              message-mode
+              help-mode
+              gud-mode
+              vterm-mode))
   (setq corfu-auto-delay 0.1
         corfu-auto-prefix 2)
   :config
@@ -1791,10 +1800,7 @@ nil means disabled."
 *** Pyim
 #+begin_src emacs-lisp :tangle yes
 (use-package pyim-basedict :ensure t :pin elpa-local)
-(use-package pyim
-  :ensure t
-  :pin elpa-local
-  :defer 0.5
+(use-package pyim :ensure t :pin elpa-local :defer 0.5
   :init
   (setq pyim-dcache-directory (format "%s.local/pyim" freedom-emacs-directory))
   (setq default-input-method "pyim")
@@ -1853,17 +1859,12 @@ nil means disabled."
   );; pyim
 #+end_src
 
-*** Vim
-#+begin_src emacs-lisp :tangle yes
-(use-package vimrc-mode :ensure t :config
-  (add-to-list 'auto-mode-alist '("\\.vim\\(rc\\)?\\'" . vimrc-mode)))
-
-#+end_src
-
-*** Lsp-mode
+*** Language
 **** lsp-mode
 #+begin_src emacs-lisp :tangle yes
-(use-package lsp-mode :ensure t :hook '((c-mode . lsp)))
+(use-package lsp-mode :ensure t
+  :hook '((c-mode . lsp)
+          (python-mode . lsp)))
 #+end_src
 
 **** dumb-jump
@@ -1880,7 +1881,30 @@ nil means disabled."
 
 #+end_src
 
+**** Vim
+#+begin_src emacs-lisp :tangle yes
+(use-package vimrc-mode :ensure t
+  :mode "\\.vindrc\\'"
+  :config
+  (add-to-list 'auto-mode-alist '(("\\.vim\\(rc\\)?\\'" . vimrc-mode)
+                                  ("\\.vindrc\\'" . vimrc-mode))))
+
+#+end_src
+
+**** nix
+#+begin_src emacs-lisp :tangle yes
+(use-package nix-mode
+  :ensure t
+  :mode "\\.nix\\'")
+#+end_src
+
 *** Sessions
+#+begin_src emacs-lisp :tangle yes
+(use-package restart-emacs :ensure t)
+(recentf-mode 1)
+(save-place-mode 1)
+#+end_src
+
 #+begin_src emacs-lisp :tangle no
 (use-package restart-emacs
   :ensure t)
