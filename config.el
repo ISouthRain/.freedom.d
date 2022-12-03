@@ -114,7 +114,7 @@
       ;; 调整启动时窗口大小/最大化/全屏
       (set-face-attribute 'default nil :height 155)
       (setq initial-frame-alist
-            '((top . 60) (left . 400) (width . 88) (height . 39)))
+            '((top . 60) (left . 400) (width . 85) (height . 39)))
       ;; (add-hook 'window-setup-hook #'toggle-frame-maximized t)
       ;; (add-hook 'window-setup-hook #'toggle-frame-fullscreen t)
       ;; )
@@ -437,6 +437,7 @@
 (use-package helpful
   :ensure t
   :bind (("C-h f" . helpful-callable)
+         ("C-h C-f" . helpful-callable)
          ("C-h v" . helpful-variable)
          ("C-h k" . helpful-key)
          ("C-h C-d" . helpful-at-point)
