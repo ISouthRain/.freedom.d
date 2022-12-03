@@ -865,21 +865,16 @@
   (use-package projectile-ripgrep :ensure t :pin elpa-local)
   )
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; yasnippet 补全
 (use-package yasnippet
   :ensure t
   :defer 0.5
-  :hook '((prog-mode . yas-minor-mode)
-          (after-init . yas-global-mode))
   :config
-  (yas-reload-all)
+  (setq yas-global-mode 1)
   (setq yas--default-user-snippets-dir (format "%ssnippets" freedom-emacs-directory))
-  (setq yas-snippet-dirs
-        '(
-          "~/.freedom.d/snippets"
-          ))
-  )
+  (setq yas-snippet-dirs '("~/.freedom.d/snippets"))
+   )
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; 快速点击各类链接
@@ -1246,20 +1241,10 @@ nil means disabled."
 (use-package company
   :ensure t
   :bind (:map company-active-map
-  ;; ("<tab>" . company-complete-selection)
-  ("<tab>" . company-select-next)
-  ("<backtab>" . company-select-previous)
+         ;; ("<tab>" . company-complete-selection)
+         ("<tab>" . company-select-next)
+         ("<backtab>" . company-select-previous)
          )
-  ;; :bind (("M-/"       . company-complete)
-  ;;        ("C-M-i"     . company-complete)
-  ;;        :map company-mode-map
-  ;;        ("<backtab>" . company-yasnippet)
-  ;;        ("C-p" . company-select-previous)
-  ;;        ("C-n" . company-select-next)
-  ;;        ("TAB" . company-select-next)
-  ;;        :map company-active-map
-  ;;        ("<backtab>" . company-yasnippet)
-  ;;        )
   :commands (company-complete-common
              company-complete-common-or-cycle
              company-manual-begin
@@ -1283,7 +1268,12 @@ nil means disabled."
 
         ;; Buffer-local backends will be computed when loading a major mode, so
         ;; only specify a global default here.
-        company-backends '(company-capf)
+        company-backends '(company-capf
+                           company-files
+                           company-keywords
+                           company-yasnippet
+                           company-dabbrev-code
+                           company-dabbrev)
 
         ;; These auto-complete the current selection when
         ;; `company-auto-commit-chars' is typed. This is too magical. We
@@ -1309,16 +1299,11 @@ nil means disabled."
                        'company-abort))
   )
 
-
-;;
-;;; Packages
-
 (use-package company-files
   :ensure nil
   :config
   ;; Fix `company-files' completion for org file:* links
   (add-to-list 'company-files--regexps "file:\\(\\(?:\\.\\{1,2\\}/\\|~/\\|/\\)[^\]\n]*\\)"))
-
 
 (use-package company-box
   :ensure t
