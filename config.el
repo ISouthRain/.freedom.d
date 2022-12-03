@@ -874,6 +874,15 @@
   (setq yas-global-mode 1)
   (setq yas--default-user-snippets-dir (format "%ssnippets" freedom-emacs-directory))
   (setq yas-snippet-dirs '("~/.freedom.d/snippets"))
+ (defun my-company-yasnippet-disable-inline (fun command &optional arg &rest _ignore)
+    "Enable yasnippet but disable it inline."
+    (if (eq command 'prefix)
+        (when-let ((prefix (funcall fun 'prefix)))
+          (unless (memq (char-before (- (point) (length prefix))) '(?. ?> ?\())
+            prefix))
+      (funcall fun command arg)))
+  (advice-add #'company-yasnippet :around #'my-company-yasnippet-disable-inline)
+
    )
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -1251,6 +1260,7 @@ nil means disabled."
              company-grab-line)
   :hook (after-init . global-company-mode)
   :init
+
   (setq company-minimum-prefix-length 2
         company-tooltip-limit 14
         company-tooltip-align-annotations t
