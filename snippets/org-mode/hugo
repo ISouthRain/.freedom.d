@@ -14,6 +14,6 @@
 #+HUGO_AUTO_SET_LASTMOD: t
 #+HUGO_DRAFT: false
 #+HUGO_WEIGHT: 1
-#+SETUPFILE: ~/.emacs.d/org-html-theme-list/org-joshua/style.setup
+#+SETUPFILE: ~/.freedom.d/org-html-theme-list/org-joshua/style.setup
 
 $0
