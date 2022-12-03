@@ -193,200 +193,201 @@
 *** Package Install
 **** Meow
 #+begin_src emacs-lisp :tangle yes
-(use-package meow
-  :ensure t
-  :config
-  (defun meow-setup ()
-    (setq meow-cheatsheet-layout meow-cheatsheet-layout-qwerty)
-    (meow-motion-overwrite-define-key
-     '("j" . meow-next)
-     '("k" . meow-prev)
-     '("h" . meow-left)
-     '("l" . meow-right)
-     '("." . meow-inner-of-thing)
-     '("," . meow-bounds-of-thing)
-     '("v" . +meow-visual)
-     '("<escape>" . ignore))
-    (meow-leader-define-key
-     ;; SPC j/k will run the original command in MOTION state.
-     '("j" . "H-j")
-     '("k" . "H-k")
-     '("bb" . consult-buffer)
-     '("bi" . ibuffer)
-     '("bk" . kill-this-buffer)
-     ;; '("c SPC" . align-regexp)
-     '("fr" . consult-recent-file)
-     '("fy" . google-translate-smooth-translate)
-     '("fs" . save-buffer)
-     ;; '("fy" . gts-do-translate)
-     '("qR" . restart-emacs)
-     '("qq" . save-buffers-kill-terminal)
-     '("wk" . windmove-up)
-     '("wj" . windmove-down)
-     '("wh" . windmove-left)
-     '("wl" . windmove-right)
-     '("wd" . delete-window)
-     '("ws" . split-window-below)
-     '("wv" . split-window-right)
-     '("ww" . ace-window)
-     '("sp" . consult-ripgrep)
-     '("si" . consult-imenu)
-     '("oa" . org-agenda)
-     '("op" . dired)
-     '("pf" . projectile-find-file)
-     '("pd" . projectile-find-dir)
-     '("ps" . projectile-ripgrep)
-     '("pa" . projectile-add-known-project)
-     '("pb" . projectile-switch-to-buffer)
-     '("pS" . projectile-switch-project)
-     '("nn" . org-capture)
-     '("nrf" . org-roam-node-find)
-     '("nrs" . org-roam-db-sync)
-     ;; Use SPC (0-9) for digit arguments.
-     '("1" . meow-digit-argument)
-     '("2" . meow-digit-argument)
-     '("3" . meow-digit-argument)
-     '("4" . meow-digit-argument)
-     '("5" . meow-digit-argument)
-     '("6" . meow-digit-argument)
-     '("7" . meow-digit-argument)
-     '("8" . meow-digit-argument)
-     '("9" . meow-digit-argument)
-     '("0" . meow-digit-argument)
-     '("/" . meow-keypad-describe-key)
-     '("?" . meow-cheatsheet))
-    (meow-normal-define-key
-     '("0" . meow-expand-0)
-     '("9" . meow-expand-9)
-     '("8" . meow-expand-8)
-     '("7" . meow-expand-7)
-     '("6" . meow-expand-6)
-     '("5" . meow-expand-5)
-     '("4" . meow-expand-4)
-     '("3" . meow-expand-3)
-     '("2" . meow-expand-2)
-     '("1" . meow-expand-1)
-     '("-" . negative-argument)
-     '(";" . meow-reverse)
-     '("." . meow-inner-of-thing)
-     '("," . meow-bounds-of-thing)
-     '("[" . meow-beginning-of-thing)
-     '("]" . meow-end-of-thing)
-     '("a" . meow-append)
-     '("A" . meow-open-below)
-     '("b" . meow-back-word)
-     '("B" . meow-back-symbol)
-     '("c" . meow-change)
-     '("d" . meow-delete)
-     '("D" . meow-backward-delete)
-     '("e" . meow-next-word)
-     '("E" . meow-next-symbol)
-     '("f" . meow-find)
-     '("F" . avy-goto-char)
-     '("g" . meow-cancel-selection)
-     ;; '("gb" . end-of-buffer)
-     ;; '("gg" . beginning-of-buffer)
-     ;; '("gd" . xref-find-definitions)
-     ;; '("gD" . xref-pop-marker-stack)
-     '("G" . meow-grab)
-     '("h" . meow-left)
-     '("H" . meow-left-expand)
-     '("i" . meow-insert)
-     '("I" . meow-open-above)
-     '("j" . meow-next)
-     '("J" . meow-next-expand)
-     '("k" . meow-prev)
-     '("K" . meow-prev-expand)
-     '("l" . meow-right)
-     '("L" . meow-right-expand)
-     '("m" . meow-join)
-     '("n" . meow-search)
-     '("o" . meow-block)
-     '("O" . meow-to-block)
-     '("p" . meow-yank)
-     '("q" . meow-quit)
-     '("Q" . meow-goto-line)
-     '("r" . meow-replace)
-     '("R" . meow-swap-grab)
-     '("s" . meow-clipboard-kill)
-     '("t" . meow-till)
-     '("u" . undo-tree-undo)
-     '("U" . meow-undo-in-selection)
-     ;;'("v" . meow-visit)
-     '("v" . +meow-visual)
-     '("w" . meow-mark-word)
-     '("W" . meow-mark-symbol)
-     '("x" . meow-line)
-     '("X" . avy-goto-line)
-     '("y" . meow-save)
-     '("Y" . meow-sync-grab)
-     '("z" . meow-pop-selection)
-     '("'" . repeat)
-     '("$" . move-end-of-line)
-     '("/" . consult-line)
-     '("C-s" . consult-line)
-     '("=" . meow-indent)
-     '(">" . indent-rigidly-right)
-     '("<" . indent-rigidly-left)
-     '("C-r" . undo-tree-redo)
-     '("\"" . consult-yank-pop)
-     '("<f12>" . dumb-jump-go)
-     ;; '("<escape>" . ignore)
-     '("<escape>" . meow-cancel-selection)
-     ))
-  (meow-setup)
-  (meow-global-mode 1)
-  (setq meow-expand-hint-remove-delay 3
-        meow-use-clipboard t)
+  (use-package meow
+    :ensure t
+    :config
+    (defun meow-setup ()
+      (setq meow-cheatsheet-layout meow-cheatsheet-layout-qwerty)
+      (meow-motion-overwrite-define-key
+       '("j" . meow-next)
+       '("k" . meow-prev)
+       '("h" . meow-left)
+       '("l" . meow-right)
+       '("." . meow-inner-of-thing)
+       '("," . meow-bounds-of-thing)
+       '("v" . +meow-visual)
+       '("<escape>" . ignore))
+      (meow-leader-define-key
+       ;; SPC j/k will run the original command in MOTION state.
+       '("j" . "H-j")
+       '("k" . "H-k")
+       '("bb" . consult-buffer)
+       '("bi" . ibuffer)
+       '("bk" . kill-this-buffer)
+       ;; '("c SPC" . align-regexp)
+       '("fr" . consult-recent-file)
+       '("fy" . google-translate-smooth-translate)
+       '("fs" . save-buffer)
+       ;; '("fy" . gts-do-translate)
+       '("qR" . restart-emacs)
+       '("qq" . save-buffers-kill-terminal)
+       '("wk" . windmove-up)
+       '("wj" . windmove-down)
+       '("wh" . windmove-left)
+       '("wl" . windmove-right)
+       '("wd" . delete-window)
+       '("ws" . split-window-below)
+       '("wv" . split-window-right)
+       '("ww" . ace-window)
+       '("sp" . consult-ripgrep)
+       '("si" . consult-imenu)
+       '("oa" . org-agenda)
+       '("op" . dired)
+       '("pf" . projectile-find-file)
+       '("pd" . projectile-find-dir)
+       '("ps" . projectile-ripgrep)
+       '("pa" . projectile-add-known-project)
+       '("pb" . projectile-switch-to-buffer)
+       '("pS" . projectile-switch-project)
+       '("nn" . org-capture)
+       '("nrf" . org-roam-node-find)
+       '("nrs" . org-roam-db-sync)
+       ;; Use SPC (0-9) for digit arguments.
+       '("1" . meow-digit-argument)
+       '("2" . meow-digit-argument)
+       '("3" . meow-digit-argument)
+       '("4" . meow-digit-argument)
+       '("5" . meow-digit-argument)
+       '("6" . meow-digit-argument)
+       '("7" . meow-digit-argument)
+       '("8" . meow-digit-argument)
+       '("9" . meow-digit-argument)
+       '("0" . meow-digit-argument)
+       '("/" . meow-keypad-describe-key)
+       '("?" . meow-cheatsheet))
+      (meow-normal-define-key
+       '("0" . meow-expand-0)
+       '("9" . meow-expand-9)
+       '("8" . meow-expand-8)
+       '("7" . meow-expand-7)
+       '("6" . meow-expand-6)
+       '("5" . meow-expand-5)
+       '("4" . meow-expand-4)
+       '("3" . meow-expand-3)
+       '("2" . meow-expand-2)
+       '("1" . meow-expand-1)
+       '("-" . negative-argument)
+       '(";" . meow-reverse)
+       '("." . meow-inner-of-thing)
+       '("," . meow-bounds-of-thing)
+       '("[" . meow-beginning-of-thing)
+       '("]" . meow-end-of-thing)
+       '("a" . meow-append)
+       '("A" . meow-open-below)
+       '("b" . meow-back-word)
+       '("B" . meow-back-symbol)
+       '("c" . meow-change)
+       '("d" . meow-delete)
+       '("D" . meow-backward-delete)
+       '("e" . meow-next-word)
+       '("E" . meow-next-symbol)
+       '("f" . meow-find)
+       '("F" . avy-goto-char)
+       '("g" . meow-cancel-selection)
+       ;; '("gb" . end-of-buffer)
+       ;; '("gg" . beginning-of-buffer)
+       ;; '("gd" . xref-find-definitions)
+       ;; '("gD" . xref-pop-marker-stack)
+       '("G" . meow-grab)
+       '("h" . meow-left)
+       '("H" . meow-left-expand)
+       '("i" . meow-insert)
+       '("I" . meow-open-above)
+       '("j" . meow-next)
+       '("J" . meow-next-expand)
+       '("k" . meow-prev)
+       '("K" . meow-prev-expand)
+       '("l" . meow-right)
+       '("L" . meow-right-expand)
+       '("m" . meow-join)
+       '("n" . meow-search)
+       '("o" . meow-block)
+       '("O" . meow-to-block)
+       '("p" . meow-yank)
+       '("q" . meow-quit)
+       '("Q" . meow-goto-line)
+       '("r" . meow-replace)
+       '("R" . meow-swap-grab)
+       '("s" . meow-clipboard-kill)
+       '("t" . meow-till)
+       '("u" . undo-tree-undo)
+       '("U" . meow-undo-in-selection)
+       ;;'("v" . meow-visit)
+       '("v" . +meow-visual)
+       '("w" . meow-mark-word)
+       '("W" . meow-mark-symbol)
+       '("x" . meow-line)
+       '("X" . avy-goto-line)
+       '("y" . meow-save)
+       '("Y" . meow-sync-grab)
+       '("z" . meow-pop-selection)
+       '("'" . repeat)
+       '("$" . move-end-of-line)
+       '("/" . consult-line)
+       '("C-s" . consult-line)
+       '("=" . meow-indent)
+       '(">" . indent-rigidly-right)
+       '("<" . indent-rigidly-left)
+       '("C-r" . undo-tree-redo)
+       '("\"" . consult-yank-pop)
+       '("<f12>" . dumb-jump-go)
+       ;; '("<escape>" . ignore)
+       '("<escape>" . meow-cancel-selection)
+       ))
+    (meow-setup)
+    (meow-global-mode 1)
+    (setq meow-expand-hint-remove-delay 3
+          meow-use-clipboard t)
 
+    )
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  (use-package meow
+    :ensure nil
+    :defer t
+    :config
+    (defun +meow-insert-chord-two (s otherfunction keydelay)
+      "类似 key-chord 功能"
+      (when (meow-insert-mode-p)
+        (let ((modified (buffer-modified-p))
+              (undo-list buffer-undo-list))
+          (insert (elt s 0))
+          (let* ((second-char (elt s 1))
+                 (event
+                  (if defining-kbd-macro
+                      (read-event nil nil)
+                    (read-event nil nil keydelay))))
+            (when event
+              (if (and (characterp event) (= event second-char))
+                  (progn
+                    (backward-delete-char 1)
+                    (set-buffer-modified-p modified)
+                    (setq buffer-undo-list undo-list)
+                    (apply otherfunction nil))
+                (push event unread-command-events)))))))
+
+    (defun +meow-chord-pyim ()
+      (interactive)
+      (+meow-insert-chord-two ";;" #'toggle-input-method 0.5))
+    (define-key meow-insert-state-keymap (substring ";;" 0 1)
+      #'+meow-chord-pyim)
+    (defun +meow-chord-insert-exit ()
+      (interactive)
+      (+meow-insert-chord-two "jk" #'+meow-insert-exit 0.5))
+    (define-key meow-insert-state-keymap (substring "jk" 0 1)
+      #'+meow-chord-insert-exit)
+    (defun +meow-insert-exit ()
+      (interactive)
+      (meow-insert-exit)
+      ;; (corfu-quit)
   )
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-(use-package meow
-  :ensure nil
-  :defer t
-  :config
-  (defun +meow-insert-chord-two (s otherfunction keydelay)
-    "类似 key-chord 功能"
-    (when (meow-insert-mode-p)
-      (let ((modified (buffer-modified-p))
-            (undo-list buffer-undo-list))
-        (insert (elt s 0))
-        (let* ((second-char (elt s 1))
-               (event
-                (if defining-kbd-macro
-                    (read-event nil nil)
-                  (read-event nil nil keydelay))))
-          (when event
-            (if (and (characterp event) (= event second-char))
-                (progn
-                  (backward-delete-char 1)
-                  (set-buffer-modified-p modified)
-                  (setq buffer-undo-list undo-list)
-                  (apply otherfunction nil))
-              (push event unread-command-events)))))))
 
-  (defun +meow-chord-pyim ()
-    (interactive)
-    (+meow-insert-chord-two ";;" #'toggle-input-method 0.5))
-  (define-key meow-insert-state-keymap (substring ";;" 0 1)
-    #'+meow-chord-pyim)
-  (defun +meow-chord-insert-exit ()
-    (interactive)
-    (+meow-insert-chord-two "jk" #'+meow-insert-exit 0.5))
-  (define-key meow-insert-state-keymap (substring "jk" 0 1)
-    #'+meow-chord-insert-exit)
-  (defun +meow-insert-exit ()
-    (interactive)
-    (meow-insert-exit)
-    (corfu-quit))
-
-  (defun +meow-visual ()
-    (interactive)
-    (meow-left-expand)
-    (meow-right-expand))
+    (defun +meow-visual ()
+      (interactive)
+      (meow-left-expand)
+      (meow-right-expand))
 
 
-  )
+    )
 
 #+end_src
 
@@ -1418,158 +1419,163 @@ nil means disabled."
 *** Complation 补全
 **** company
 #+begin_src emacs-lisp :tangle yes
-(use-package company
-  :ensure t
-  ;; :bind (("M-/"       . company-complete)
-  ;;        ("C-M-i"     . company-complete)
-  ;;        :map company-mode-map
-  ;;        ("<backtab>" . company-yasnippet)
-  ;;        ("C-p" . company-select-previous)
-  ;;        ("C-n" . company-select-next)
-  ;;        ("TAB" . company-select-next)
-  ;;        :map company-active-map
-  ;;        ("<backtab>" . company-yasnippet)
-  ;;        )
-  :commands (company-complete-common
-             company-complete-common-or-cycle
-             company-manual-begin
-             company-grab-line)
-  :hook (after-init . global-company-mode)
-  :init
-  (setq company-minimum-prefix-length 2
-        company-tooltip-limit 14
-        company-tooltip-align-annotations t
-        company-require-match 'never
-        company-global-modes
-        '(not erc-mode
-              circe-mode
-              message-mode
-              help-mode
-              gud-mode
-              vterm-mode)
-        company-frontends
-        '(company-pseudo-tooltip-frontend  ; always show candidates in overlay tooltip
-          company-echo-metadata-frontend)  ; show selected candidate docs in echo area
-
-        ;; Buffer-local backends will be computed when loading a major mode, so
-        ;; only specify a global default here.
-        company-backends '(company-capf)
-
-        ;; These auto-complete the current selection when
-        ;; `company-auto-commit-chars' is typed. This is too magical. We
-        ;; already have the much more explicit RET and TAB.
-        company-auto-commit nil
-
-        ;; Only search the current buffer for `company-dabbrev' (a backend that
-        ;; suggests text your open buffers). This prevents Company from causing
-        ;; lag once you have a lot of buffers open.
-        company-dabbrev-other-buffers nil
-        ;; Make `company-dabbrev' fully case-sensitive, to improve UX with
-        ;; domain-specific words with particular casing.
-        company-dabbrev-ignore-case nil
-        company-dabbrev-downcase nil)
-
-  :config
-  (use-package eldoc
+  (use-package company
     :ensure t
+    :bind (:map company-active-map
+    ;; ("<tab>" . company-complete-selection)
+    ("<tab>" . company-select-next)
+    ("<backtab>" . company-select-previous)
+           )
+    ;; :bind (("M-/"       . company-complete)
+    ;;        ("C-M-i"     . company-complete)
+    ;;        :map company-mode-map
+    ;;        ("<backtab>" . company-yasnippet)
+    ;;        ("C-p" . company-select-previous)
+    ;;        ("C-n" . company-select-next)
+    ;;        ("TAB" . company-select-next)
+    ;;        :map company-active-map
+    ;;        ("<backtab>" . company-yasnippet)
+    ;;        )
+    :commands (company-complete-common
+               company-complete-common-or-cycle
+               company-manual-begin
+               company-grab-line)
+    :hook (after-init . global-company-mode)
+    :init
+    (setq company-minimum-prefix-length 2
+          company-tooltip-limit 14
+          company-tooltip-align-annotations t
+          company-require-match 'never
+          company-global-modes
+          '(not erc-mode
+                circe-mode
+                message-mode
+                help-mode
+                gud-mode
+                vterm-mode)
+          company-frontends
+          '(company-pseudo-tooltip-frontend  ; always show candidates in overlay tooltip
+            company-echo-metadata-frontend)  ; show selected candidate docs in echo area
+
+          ;; Buffer-local backends will be computed when loading a major mode, so
+          ;; only specify a global default here.
+          company-backends '(company-capf)
+
+          ;; These auto-complete the current selection when
+          ;; `company-auto-commit-chars' is typed. This is too magical. We
+          ;; already have the much more explicit RET and TAB.
+          company-auto-commit nil
+
+          ;; Only search the current buffer for `company-dabbrev' (a backend that
+          ;; suggests text your open buffers). This prevents Company from causing
+          ;; lag once you have a lot of buffers open.
+          company-dabbrev-other-buffers nil
+          ;; Make `company-dabbrev' fully case-sensitive, to improve UX with
+          ;; domain-specific words with particular casing.
+          company-dabbrev-ignore-case nil
+          company-dabbrev-downcase nil)
+
     :config
-    (eldoc-add-command 'company-complete-selection
-                       'company-complete-common
-                       'company-capf
-                       'company-abort))
-  )
+    (use-package eldoc
+      :ensure t
+      :config
+      (eldoc-add-command 'company-complete-selection
+                         'company-complete-common
+                         'company-capf
+                         'company-abort))
+    )
 
 
-;;
-;;; Packages
+  ;;
+  ;;; Packages
 
-(use-package company-files
-  :ensure nil
-  :config
-  ;; Fix `company-files' completion for org file:* links
-  (add-to-list 'company-files--regexps "file:\\(\\(?:\\.\\{1,2\\}/\\|~/\\|/\\)[^\]\n]*\\)"))
+  (use-package company-files
+    :ensure nil
+    :config
+    ;; Fix `company-files' completion for org file:* links
+    (add-to-list 'company-files--regexps "file:\\(\\(?:\\.\\{1,2\\}/\\|~/\\|/\\)[^\]\n]*\\)"))
 
 
-(use-package company-box
-  :ensure t
-  :hook (company-mode . company-box-mode)
-  :config
-  (setq company-box-show-single-candidate t
-        company-box-backends-colors nil
-        company-box-max-candidates 50
-        company-box-icons-alist 'company-box-icons-all-the-icons
-        ;; Move company-box-icons--elisp to the end, because it has a catch-all
-        ;; clause that ruins icons from other backends in elisp buffers.
-        company-box-icons-functions
-        (cons #'+company-box-icons--elisp-fn
-              (delq 'company-box-icons--elisp
-                    company-box-icons-functions))
-        company-box-icons-all-the-icons
-        (let ((all-the-icons-scale-factor 0.8))
-          `((Unknown       . ,(all-the-icons-material "find_in_page"             :face 'all-the-icons-purple))
-            (Text          . ,(all-the-icons-material "text_fields"              :face 'all-the-icons-green))
-            (Method        . ,(all-the-icons-material "functions"                :face 'all-the-icons-red))
-            (Function      . ,(all-the-icons-material "functions"                :face 'all-the-icons-red))
-            (Constructor   . ,(all-the-icons-material "functions"                :face 'all-the-icons-red))
-            (Field         . ,(all-the-icons-material "functions"                :face 'all-the-icons-red))
-            (Variable      . ,(all-the-icons-material "adjust"                   :face 'all-the-icons-blue))
-            (Class         . ,(all-the-icons-material "class"                    :face 'all-the-icons-red))
-            (Interface     . ,(all-the-icons-material "settings_input_component" :face 'all-the-icons-red))
-            (Module        . ,(all-the-icons-material "view_module"              :face 'all-the-icons-red))
-            (Property      . ,(all-the-icons-material "settings"                 :face 'all-the-icons-red))
-            (Unit          . ,(all-the-icons-material "straighten"               :face 'all-the-icons-red))
-            (Value         . ,(all-the-icons-material "filter_1"                 :face 'all-the-icons-red))
-            (Enum          . ,(all-the-icons-material "plus_one"                 :face 'all-the-icons-red))
-            (Keyword       . ,(all-the-icons-material "filter_center_focus"      :face 'all-the-icons-red))
-            (Snippet       . ,(all-the-icons-material "short_text"               :face 'all-the-icons-red))
-            (Color         . ,(all-the-icons-material "color_lens"               :face 'all-the-icons-red))
-            (File          . ,(all-the-icons-material "insert_drive_file"        :face 'all-the-icons-red))
-            (Reference     . ,(all-the-icons-material "collections_bookmark"     :face 'all-the-icons-red))
-            (Folder        . ,(all-the-icons-material "folder"                   :face 'all-the-icons-red))
-            (EnumMember    . ,(all-the-icons-material "people"                   :face 'all-the-icons-red))
-            (Constant      . ,(all-the-icons-material "pause_circle_filled"      :face 'all-the-icons-red))
-            (Struct        . ,(all-the-icons-material "streetview"               :face 'all-the-icons-red))
-            (Event         . ,(all-the-icons-material "event"                    :face 'all-the-icons-red))
-            (Operator      . ,(all-the-icons-material "control_point"            :face 'all-the-icons-red))
-            (TypeParameter . ,(all-the-icons-material "class"                    :face 'all-the-icons-red))
-            (Template      . ,(all-the-icons-material "short_text"               :face 'all-the-icons-green))
-            (ElispFunction . ,(all-the-icons-material "functions"                :face 'all-the-icons-red))
-            (ElispVariable . ,(all-the-icons-material "check_circle"             :face 'all-the-icons-blue))
-            (ElispFeature  . ,(all-the-icons-material "stars"                    :face 'all-the-icons-orange))
-            (ElispFace     . ,(all-the-icons-material "format_paint"             :face 'all-the-icons-pink)))))
+  (use-package company-box
+    :ensure t
+    :hook (company-mode . company-box-mode)
+    :config
+    (setq company-box-show-single-candidate t
+          company-box-backends-colors nil
+          company-box-max-candidates 50
+          company-box-icons-alist 'company-box-icons-all-the-icons
+          ;; Move company-box-icons--elisp to the end, because it has a catch-all
+          ;; clause that ruins icons from other backends in elisp buffers.
+          company-box-icons-functions
+          (cons #'+company-box-icons--elisp-fn
+                (delq 'company-box-icons--elisp
+                      company-box-icons-functions))
+          company-box-icons-all-the-icons
+          (let ((all-the-icons-scale-factor 0.8))
+            `((Unknown       . ,(all-the-icons-material "find_in_page"             :face 'all-the-icons-purple))
+              (Text          . ,(all-the-icons-material "text_fields"              :face 'all-the-icons-green))
+              (Method        . ,(all-the-icons-material "functions"                :face 'all-the-icons-red))
+              (Function      . ,(all-the-icons-material "functions"                :face 'all-the-icons-red))
+              (Constructor   . ,(all-the-icons-material "functions"                :face 'all-the-icons-red))
+              (Field         . ,(all-the-icons-material "functions"                :face 'all-the-icons-red))
+              (Variable      . ,(all-the-icons-material "adjust"                   :face 'all-the-icons-blue))
+              (Class         . ,(all-the-icons-material "class"                    :face 'all-the-icons-red))
+              (Interface     . ,(all-the-icons-material "settings_input_component" :face 'all-the-icons-red))
+              (Module        . ,(all-the-icons-material "view_module"              :face 'all-the-icons-red))
+              (Property      . ,(all-the-icons-material "settings"                 :face 'all-the-icons-red))
+              (Unit          . ,(all-the-icons-material "straighten"               :face 'all-the-icons-red))
+              (Value         . ,(all-the-icons-material "filter_1"                 :face 'all-the-icons-red))
+              (Enum          . ,(all-the-icons-material "plus_one"                 :face 'all-the-icons-red))
+              (Keyword       . ,(all-the-icons-material "filter_center_focus"      :face 'all-the-icons-red))
+              (Snippet       . ,(all-the-icons-material "short_text"               :face 'all-the-icons-red))
+              (Color         . ,(all-the-icons-material "color_lens"               :face 'all-the-icons-red))
+              (File          . ,(all-the-icons-material "insert_drive_file"        :face 'all-the-icons-red))
+              (Reference     . ,(all-the-icons-material "collections_bookmark"     :face 'all-the-icons-red))
+              (Folder        . ,(all-the-icons-material "folder"                   :face 'all-the-icons-red))
+              (EnumMember    . ,(all-the-icons-material "people"                   :face 'all-the-icons-red))
+              (Constant      . ,(all-the-icons-material "pause_circle_filled"      :face 'all-the-icons-red))
+              (Struct        . ,(all-the-icons-material "streetview"               :face 'all-the-icons-red))
+              (Event         . ,(all-the-icons-material "event"                    :face 'all-the-icons-red))
+              (Operator      . ,(all-the-icons-material "control_point"            :face 'all-the-icons-red))
+              (TypeParameter . ,(all-the-icons-material "class"                    :face 'all-the-icons-red))
+              (Template      . ,(all-the-icons-material "short_text"               :face 'all-the-icons-green))
+              (ElispFunction . ,(all-the-icons-material "functions"                :face 'all-the-icons-red))
+              (ElispVariable . ,(all-the-icons-material "check_circle"             :face 'all-the-icons-blue))
+              (ElispFeature  . ,(all-the-icons-material "stars"                    :face 'all-the-icons-orange))
+              (ElispFace     . ,(all-the-icons-material "format_paint"             :face 'all-the-icons-pink)))))
 
-  ;; HACK Fix oversized scrollbar in some odd cases
-  ;; REVIEW `resize-mode' is deprecated and may stop working in the future.
-  ;; TODO PR me upstream?
-  (setq x-gtk-resize-child-frames 'resize-mode)
+    ;; HACK Fix oversized scrollbar in some odd cases
+    ;; REVIEW `resize-mode' is deprecated and may stop working in the future.
+    ;; TODO PR me upstream?
+    (setq x-gtk-resize-child-frames 'resize-mode)
 
-  ;; Disable tab-bar in company-box child frames
-  ;; TODO PR me upstream!
-  (add-to-list 'company-box-frame-parameters '(tab-bar-lines . 0))
+    ;; Disable tab-bar in company-box child frames
+    ;; TODO PR me upstream!
+    (add-to-list 'company-box-frame-parameters '(tab-bar-lines . 0))
 
-  ;; Don't show documentation in echo area, because company-box displays its own
-  ;; in a child frame.
-  (delq 'company-echo-metadata-frontend company-frontends)
+    ;; Don't show documentation in echo area, because company-box displays its own
+    ;; in a child frame.
+    (delq 'company-echo-metadata-frontend company-frontends)
 
-  (defun +company-box-icons--elisp-fn (candidate)
-    (when (derived-mode-p 'emacs-lisp-mode)
-      (let ((sym (intern candidate)))
-        (cond ((fboundp sym)  'ElispFunction)
-              ((boundp sym)   'ElispVariable)
-              ((featurep sym) 'ElispFeature)
-              ((facep sym)    'ElispFace)))))
-  )
+    (defun +company-box-icons--elisp-fn (candidate)
+      (when (derived-mode-p 'emacs-lisp-mode)
+        (let ((sym (intern candidate)))
+          (cond ((fboundp sym)  'ElispFunction)
+                ((boundp sym)   'ElispVariable)
+                ((featurep sym) 'ElispFeature)
+                ((facep sym)    'ElispFace)))))
+    )
 
-(use-package company-dict
-  :defer t
-  :config
-  (setq company-dict-dir (expand-file-name "dicts" doom-user-dir))
-  (add-hook! 'doom-project-hook
-    (defun +company-enable-project-dicts-h (mode &rest _)
-      "Enable per-project dictionaries."
-      (if (symbol-value mode)
-          (add-to-list 'company-dict-minor-mode-list mode nil #'eq)
-        (setq company-dict-minor-mode-list (delq mode company-dict-minor-mode-list))))))
+  (use-package company-dict
+    :defer t
+    :config
+    (setq company-dict-dir (expand-file-name "dicts" doom-user-dir))
+    (add-hook! 'doom-project-hook
+      (defun +company-enable-project-dicts-h (mode &rest _)
+        "Enable per-project dictionaries."
+        (if (symbol-value mode)
+            (add-to-list 'company-dict-minor-mode-list mode nil #'eq)
+          (setq company-dict-minor-mode-list (delq mode company-dict-minor-mode-list))))))
 
 #+end_src
 

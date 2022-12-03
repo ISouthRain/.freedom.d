@@ -354,7 +354,8 @@
   (defun +meow-insert-exit ()
     (interactive)
     (meow-insert-exit)
-    (corfu-quit))
+    ;; (corfu-quit)
+)
 
   (defun +meow-visual ()
     (interactive)
@@ -1244,6 +1245,11 @@ nil means disabled."
 
 (use-package company
   :ensure t
+  :bind (:map company-active-map
+  ;; ("<tab>" . company-complete-selection)
+  ("<tab>" . company-select-next)
+  ("<backtab>" . company-select-previous)
+         )
   ;; :bind (("M-/"       . company-complete)
   ;;        ("C-M-i"     . company-complete)
   ;;        :map company-mode-map
