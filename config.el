@@ -361,8 +361,6 @@
     (interactive)
     (meow-left-expand)
     (meow-right-expand))
-
-
   )
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -809,7 +807,7 @@
   (setq org-roam-node-display-template
         (concat "${type:15} ${title:*} " (propertize "${tags:10}" 'face 'org-tag)))
   (setq org-roam-db-update-on-save t)
-  ;; (org-roam-db-autosync-mode 1)
+  (org-roam-db-autosync-mode 1)
   (setq org-roam-database-connector 'sqlite)
   )
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

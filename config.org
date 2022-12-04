@@ -855,53 +855,53 @@
 
 **** org-roam
 #+begin_src emacs-lisp :tangle yes
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; org-roam
-(use-package org-roam
-  :ensure t
-  :commands (org-roam-node-find org-agenda org-capture org-mode)
-  :init
-  (when (string= "windows-nt" system-type)
-    (setq org-roam-directory (file-truename "F:\\MyFile\\Org")))
-  (when (string= "gnu/linux" system-type)
-    (setq org-roam-directory (file-truename "~/MyFile/Org/")))
-  (when (string= "darwin" system-type)
-    (setq org-roam-directory (file-truename "~/Desktop/MyFile/Org/")))
-  :config
-  ;;搜索
-  (setq org-roam-node-display-template "${title}")
-  ;;补全
-  (setq org-roam-completion-everywhere t)
-  ;;一个也可以设置org-roam-db-node-include-function。例如，ATTACH要从 Org-roam 数据库中排除所有带有标签的标题，可以设置：
-  (setq org-roam-db-node-include-function
-        (lambda ()
-          (not (member "ATTACH" (org-get-tags)))))
-  (setq org-roam-db-gc-threshold most-positive-fixnum)
-  ;; 创建左边显示子目录分类
-  (cl-defmethod org-roam-node-type ((node org-roam-node))
-    "Return the TYPE of NODE."
-    (condition-case nil
-        (file-name-nondirectory
-         (directory-file-name
-          (file-name-directory
-           (file-relative-name (org-roam-node-file node) org-roam-directory))))
-      (error "")))
-  (setq org-roam-node-display-template
-        (concat "${type:15} ${title:*} " (propertize "${tags:10}" 'face 'org-tag)))
-  (setq org-roam-db-update-on-save t)
-  ;; (org-roam-db-autosync-mode 1)
-  (setq org-roam-database-connector 'sqlite)
-  )
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; org-roam-ui
-(use-package org-roam-ui
-  :ensure t
-  :config
-  (setq org-roam-ui-sync-theme t
-        org-roam-ui-follow t
-        org-roam-ui-update-on-save t
-        org-roam-ui-open-on-start t)
-  )
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  ;; org-roam
+  (use-package org-roam
+    :ensure t
+    :commands (org-roam-node-find org-agenda org-capture org-mode)
+    :init
+    (when (string= "windows-nt" system-type)
+      (setq org-roam-directory (file-truename "F:\\MyFile\\Org")))
+    (when (string= "gnu/linux" system-type)
+      (setq org-roam-directory (file-truename "~/MyFile/Org/")))
+    (when (string= "darwin" system-type)
+      (setq org-roam-directory (file-truename "~/Desktop/MyFile/Org/")))
+    :config
+    ;;搜索
+    (setq org-roam-node-display-template "${title}")
+    ;;补全
+    (setq org-roam-completion-everywhere t)
+    ;;一个也可以设置org-roam-db-node-include-function。例如，ATTACH要从 Org-roam 数据库中排除所有带有标签的标题，可以设置：
+    (setq org-roam-db-node-include-function
+          (lambda ()
+            (not (member "ATTACH" (org-get-tags)))))
+    (setq org-roam-db-gc-threshold most-positive-fixnum)
+    ;; 创建左边显示子目录分类
+    (cl-defmethod org-roam-node-type ((node org-roam-node))
+      "Return the TYPE of NODE."
+      (condition-case nil
+          (file-name-nondirectory
+           (directory-file-name
+            (file-name-directory
+             (file-relative-name (org-roam-node-file node) org-roam-directory))))
+        (error "")))
+    (setq org-roam-node-display-template
+          (concat "${type:15} ${title:*} " (propertize "${tags:10}" 'face 'org-tag)))
+    (setq org-roam-db-update-on-save t)
+    (org-roam-db-autosync-mode 1)
+    (setq org-roam-database-connector 'sqlite)
+    )
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  ;; org-roam-ui
+  (use-package org-roam-ui
+    :ensure t
+    :config
+    (setq org-roam-ui-sync-theme t
+          org-roam-ui-follow t
+          org-roam-ui-update-on-save t
+          org-roam-ui-open-on-start t)
+    )
 
 #+end_src
 
