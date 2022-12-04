@@ -208,6 +208,9 @@
        '("k" . meow-prev)
        '("h" . meow-left)
        '("l" . meow-right)
+       '("e" . meow-next-word)
+       '("b" . meow-back-word)
+       '("i" . meow-insert)  
        '("." . meow-inner-of-thing)
        '("," . meow-bounds-of-thing)
        '("v" . +meow-visual)
@@ -1909,8 +1912,7 @@ nil means disabled."
   :mode "\\.vindrc\\'"
   :config
   (add-to-list 'auto-mode-alist '(("\\.vim\\(rc\\)?\\'" . vimrc-mode)
-                                  ("\\.vindrc\\'" . vimrc-mode))))
-
+                                  )))
 #+end_src
 
 **** nix
