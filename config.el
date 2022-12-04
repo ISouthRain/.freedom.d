@@ -11,7 +11,7 @@
   (unless (package-installed-p 'use-package)
     (customize-set-variable
      'package-archives '(("elpa-local" . "~/.freedom.d/.local/elpa-local/")))
-    ;; (package-refresh-contents)
+    (package-refresh-contents)
     (package-install 'use-package))
   )
 
@@ -452,9 +452,9 @@
   :defer 0.5
   :bind (:map vertico-map
          ("DEL" . vertico-directory-delete-char)
-         ("TAB" . vertico-next)
-         ("S-TAB" . vertico-previous)
-)
+         ;; ("TAB" . vertico-next)
+         ;; ("S-TAB" . vertico-previous)
+         )
   :config
   (vertico-mode t)
   (setq vertico-count 15))
@@ -777,7 +777,6 @@
 ;; org-roam
 (use-package org-roam
   :ensure t
-  :commands (org-roam-node-find org-agenda org-capture org-mode)
   :init
   (when (string= "windows-nt" system-type)
     (setq org-roam-directory (file-truename "F:\\MyFile\\Org")))
@@ -818,8 +817,7 @@
   (setq org-roam-ui-sync-theme t
         org-roam-ui-follow t
         org-roam-ui-update-on-save t
-        org-roam-ui-open-on-start t)
-  )
+        org-roam-ui-open-on-start t))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; org-download
@@ -896,21 +894,6 @@
   :hook '((after-init . global-diff-hl-mode)
           (magit-pre-refresh . diff-hl-magit-pre-refresh)
           (magit-post-refresh . diff-hl-magit-post-refresh)))
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; 高亮 symbol
-(use-package symbol-overlay
-  :ensure t
-  :hook (after-init . symbol-overlay-mode)
-  :init (setq symbol-overlay-idle-time 0.1)
-  :bind (("M-i" . symbol-overlay-put)
-         ("M-n" . symbol-overlay-jump-next)
-         ("M-p" . symbol-overlay-jump-prev)
-         ("M-N" . symbol-overlay-switch-forward)
-         ("M-P" . symbol-overlay-switch-backward)
-         ("M-C" . symbol-overlay-remove-all)
-         ([M-f3] . symbol-overlay-remove-all))
-  )
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; 高亮括号匹配
@@ -1259,7 +1242,7 @@ nil means disabled."
    ("S-TAB" . corfu-previous)
    ([backtab] . corfu-previous)
    ;; ("M-SPC" . corfu-insert-separator) ;; 空格后依然补全
-   ("M-SPC" . corfu-quick-complete) ;; 空格后依然补全
+   ("M-SPC" . corfu-quick-complete) ;; 快速补全
    ("M-m" . corfu-move-to-minibuffer) ;; 在 minibuffer 中补全
    )
   :config
@@ -1303,6 +1286,7 @@ nil means disabled."
 ;;;;; TUI 支持
 (use-package corfu-terminal
   :ensure t
+  :pin elpa-local
   :config
   (unless (display-graphic-p)
     (corfu-terminal-mode 1)))

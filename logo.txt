@@ -1,22 +1,22 @@
-                                  `..`        
-                                ````+ `.`      
-                            /o:``   :+ ``      
-                        .+//dho......y/..`     
-                        `sdddddhysso+h` ``     
-                          /ddd+`..` +. .`      
-                         -hos+    `.:```       
-                       `./dddyo+//osso/:`      
-                     `/o++dddddddddddddod-     
-                    `// -y+:sdddddsddsy.dy     
-                        /o   `..```h+`y+/h+`   
-                        .s       `++``o:  ``   
-                                `:- `:-                     
+                       `..`        
+                     ````+ `.`      
+                 /o:``   :+ ``      
+             .+//dho......y/..`     
+             `sdddddhysso+h` ``     
+               /ddd+`..` +. .`      
+              -hos+    `.:```       
+            `./dddyo+//osso/:`      
+          `/o++dddddddddddddod-     
+         `// -y+:sdddddsddsy.dy     
+             /o   `..```h+`y+/h+`   
+             .s       `++``o:  ``   
+                     `:- `:-                     
 
-           FREEDOM EMACS - Enjoy Programming & Writing
+FREEDOM EMACS - Enjoy Programming & Writing
 
-                       ^_^ Dashboard ^_^
+            ^_^ Dashboard ^_^
 
-                   "SPC f r" ==> Recentf file
-                   "SPC p f" ==> Projectil file
-                   "SPC o a" ==> Agenda view
-                   M-x: Myconfig RET ==> Configuration file
+        "SPC f r" ==> Recentf file
+        "SPC p f" ==> Projectil file
+        "SPC o a" ==> Agenda view
+        M-x: Myconfig RET ==> Configuration file
