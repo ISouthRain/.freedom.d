@@ -5,12 +5,13 @@
                        ("melpa" . "http://melpa.org/packages/")
                        ("org" . "http://orgmode.org/elpa/")
                        ("gnu" . "https://elpa.gnu.org/packages/")
+                       ("nongnu" . "https://elpa.nongnu.org/nongnu/")
                        ))
   (package-initialize)
   (unless (package-installed-p 'use-package)
     (customize-set-variable
      'package-archives '(("elpa-local" . "~/.freedom.d/.local/elpa-local/")))
-    (package-refresh-contents)
+    ;; (package-refresh-contents)
     (package-install 'use-package))
   )
 
@@ -232,7 +233,8 @@
      '("/" . meow-keypad-describe-key)
      '("?" . meow-cheatsheet))
     (meow-normal-define-key
-     '("0" . meow-expand-0)
+     ;; '("0" . meow-expand-0)
+     '("0" . move-beginning-of-line)
      '("9" . meow-expand-9)
      '("8" . meow-expand-8)
      '("7" . meow-expand-7)
@@ -353,9 +355,7 @@
     #'+meow-chord-insert-exit)
   (defun +meow-insert-exit ()
     (interactive)
-    (meow-insert-exit)
-    ;; (corfu-quit)
-)
+    (meow-insert-exit))
 
   (defun +meow-visual ()
     (interactive)
@@ -453,7 +453,10 @@
   :ensure t
   :defer 0.5
   :bind (:map vertico-map
-         ("DEL" . vertico-directory-delete-char))
+         ("DEL" . vertico-directory-delete-char)
+         ("TAB" . vertico-next)
+         ("S-TAB" . vertico-previous)
+)
   :config
   (vertico-mode t)
   (setq vertico-count 15))
@@ -837,6 +840,8 @@
   (advice-add #'org-download--dir-1 :override #'my-org-download--dir-1)
   )
 
+(use-package org-cliplink :ensure t)
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; org 标题加密， 只需添加 :crypt:
 (use-package org-crypt
@@ -869,20 +874,10 @@
 ;; yasnippet 补全
 (use-package yasnippet
   :ensure t
-  :defer 0.5
   :config
-  (setq yas-global-mode 1)
   (setq yas--default-user-snippets-dir (format "%ssnippets" freedom-emacs-directory))
   (setq yas-snippet-dirs '("~/.freedom.d/snippets"))
- (defun my-company-yasnippet-disable-inline (fun command &optional arg &rest _ignore)
-    "Enable yasnippet but disable it inline."
-    (if (eq command 'prefix)
-        (when-let ((prefix (funcall fun 'prefix)))
-          (unless (memq (char-before (- (point) (length prefix))) '(?. ?> ?\())
-            prefix))
-      (funcall fun command arg)))
-  (advice-add #'company-yasnippet :around #'my-company-yasnippet-disable-inline)
-
+  (yas-global-mode)
    )
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -985,6 +980,9 @@
                    (bound-and-true-p org-indent-mode)
                    (highlight-indent-guides-mode -1)))))
 
+(use-package evil-nerd-commenter :ensure t
+  :bind ("C-x C-;" . evilnc-comment-or-uncomment-lines))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; avy 单词跳跃
 (use-package avy :ensure t)
@@ -1041,7 +1039,6 @@
 ;; elfeed-org
 (use-package elfeed-org
   :ensure t
-  :hook (elfeed-search . elfeed-org)
   :init
   (setq rmh-elfeed-org-files (list (expand-file-name "elfeed.org" freedom-emacs-directory)))
   )
@@ -1247,154 +1244,70 @@ nil means disabled."
                 "]*"))
   )
 
-(use-package company
+(use-package corfu
   :ensure t
-  :bind (:map company-active-map
-         ;; ("<tab>" . company-complete-selection)
-         ("<tab>" . company-select-next)
-         ("<backtab>" . company-select-previous)
+  :defer 0.5
+  :hook ((prog-mode . corfu-mode)
+         (shell-mode . corfu-mode)
+         (eshell-mode . corfu-mode)
+         (corfu-mode . corfu-history-mode)
+         (corfu-mode . corfu-indexed-mode)
+         (after-init . global-corfu-mode)
          )
-  :commands (company-complete-common
-             company-complete-common-or-cycle
-             company-manual-begin
-             company-grab-line)
-  :hook (after-init . global-company-mode)
-  :init
-
-  (setq company-minimum-prefix-length 2
-        company-tooltip-limit 14
-        company-tooltip-align-annotations t
-        company-require-match 'never
-        company-global-modes
+  :bind
+  (:map corfu-map
+   ("TAB" . corfu-next)
+   ([tab] . corfu-next)
+   ("S-TAB" . corfu-previous)
+   ([backtab] . corfu-previous)
+   ;; ("M-SPC" . corfu-insert-separator) ;; 空格后依然补全
+   ("M-SPC" . corfu-quick-complete) ;; 空格后依然补全
+   ("M-m" . corfu-move-to-minibuffer) ;; 在 minibuffer 中补全
+   )
+  :config
+  (setq global-corfu-mode
         '(not erc-mode
               circe-mode
               message-mode
               help-mode
               gud-mode
-              vterm-mode)
-        company-frontends
-        '(company-pseudo-tooltip-frontend  ; always show candidates in overlay tooltip
-          company-echo-metadata-frontend)  ; show selected candidate docs in echo area
-
-        ;; Buffer-local backends will be computed when loading a major mode, so
-        ;; only specify a global default here.
-        company-backends '(company-capf
-                           company-files
-                           company-keywords
-                           company-yasnippet
-                           company-dabbrev-code
-                           company-dabbrev)
-
-        ;; These auto-complete the current selection when
-        ;; `company-auto-commit-chars' is typed. This is too magical. We
-        ;; already have the much more explicit RET and TAB.
-        company-auto-commit nil
-
-        ;; Only search the current buffer for `company-dabbrev' (a backend that
-        ;; suggests text your open buffers). This prevents Company from causing
-        ;; lag once you have a lot of buffers open.
-        company-dabbrev-other-buffers nil
-        ;; Make `company-dabbrev' fully case-sensitive, to improve UX with
-        ;; domain-specific words with particular casing.
-        company-dabbrev-ignore-case nil
-        company-dabbrev-downcase nil)
-
+              vterm-mode))
+  (setq corfu-auto-delay 0.1
+        corfu-auto-prefix 2)
   :config
-  (use-package eldoc
-    :ensure t
-    :config
-    (eldoc-add-command 'company-complete-selection
-                       'company-complete-common
-                       'company-capf
-                       'company-abort))
+  (setq corfu-cycle t)                ;; Enable cycling for `corfu-next/previous'
+  (setq corfu-auto t)                 ;; Enable auto completion
+  (setq corfu-separator ?\s)          ;; Orderless field separator
+  (setq corfu-quit-at-boundary t)   ;; 空格后要不要退出补全 Never quit at completion boundary
+  (setq corfu-quit-no-match 'separator)      ;; Never quit, even if there is no match
+  (setq corfu-preview-current nil)    ;; Disable current candidate preview
+  (setq corfu-preselect-first nil)    ;; Disable candidate preselection
+  (setq corfu-on-exact-match nil)     ;; Configure handling of exact matches
+  (setq corfu-echo-documentation nil) ;; Disable documentation in the echo area
+  (setq corfu-scroll-margin 5)        ;; Use scroll margin
+  ;; 在 minibuffer 中补全 
+  (defun corfu-move-to-minibuffer ()
+     (interactive)
+     (let ((completion-extra-properties corfu--extra)
+           completion-cycle-threshold completion-cycling)
+       (apply #'consult-completion-in-region completion-in-region--data)))
   )
-
-(use-package company-files
-  :ensure nil
-  :config
-  ;; Fix `company-files' completion for org file:* links
-  (add-to-list 'company-files--regexps "file:\\(\\(?:\\.\\{1,2\\}/\\|~/\\|/\\)[^\]\n]*\\)"))
-
-(use-package company-box
+;;;;; 图标
+(use-package kind-icon
   :ensure t
-  :hook (company-mode . company-box-mode)
+  :after corfu
+  :custom
+  (kind-icon-default-face 'corfu-default) ; to compute blended backgrounds correctly
   :config
-  (setq company-box-show-single-candidate t
-        company-box-backends-colors nil
-        company-box-max-candidates 50
-        company-box-icons-alist 'company-box-icons-all-the-icons
-        ;; Move company-box-icons--elisp to the end, because it has a catch-all
-        ;; clause that ruins icons from other backends in elisp buffers.
-        company-box-icons-functions
-        (cons #'+company-box-icons--elisp-fn
-              (delq 'company-box-icons--elisp
-                    company-box-icons-functions))
-        company-box-icons-all-the-icons
-        (let ((all-the-icons-scale-factor 0.8))
-          `((Unknown       . ,(all-the-icons-material "find_in_page"             :face 'all-the-icons-purple))
-            (Text          . ,(all-the-icons-material "text_fields"              :face 'all-the-icons-green))
-            (Method        . ,(all-the-icons-material "functions"                :face 'all-the-icons-red))
-            (Function      . ,(all-the-icons-material "functions"                :face 'all-the-icons-red))
-            (Constructor   . ,(all-the-icons-material "functions"                :face 'all-the-icons-red))
-            (Field         . ,(all-the-icons-material "functions"                :face 'all-the-icons-red))
-            (Variable      . ,(all-the-icons-material "adjust"                   :face 'all-the-icons-blue))
-            (Class         . ,(all-the-icons-material "class"                    :face 'all-the-icons-red))
-            (Interface     . ,(all-the-icons-material "settings_input_component" :face 'all-the-icons-red))
-            (Module        . ,(all-the-icons-material "view_module"              :face 'all-the-icons-red))
-            (Property      . ,(all-the-icons-material "settings"                 :face 'all-the-icons-red))
-            (Unit          . ,(all-the-icons-material "straighten"               :face 'all-the-icons-red))
-            (Value         . ,(all-the-icons-material "filter_1"                 :face 'all-the-icons-red))
-            (Enum          . ,(all-the-icons-material "plus_one"                 :face 'all-the-icons-red))
-            (Keyword       . ,(all-the-icons-material "filter_center_focus"      :face 'all-the-icons-red))
-            (Snippet       . ,(all-the-icons-material "short_text"               :face 'all-the-icons-red))
-            (Color         . ,(all-the-icons-material "color_lens"               :face 'all-the-icons-red))
-            (File          . ,(all-the-icons-material "insert_drive_file"        :face 'all-the-icons-red))
-            (Reference     . ,(all-the-icons-material "collections_bookmark"     :face 'all-the-icons-red))
-            (Folder        . ,(all-the-icons-material "folder"                   :face 'all-the-icons-red))
-            (EnumMember    . ,(all-the-icons-material "people"                   :face 'all-the-icons-red))
-            (Constant      . ,(all-the-icons-material "pause_circle_filled"      :face 'all-the-icons-red))
-            (Struct        . ,(all-the-icons-material "streetview"               :face 'all-the-icons-red))
-            (Event         . ,(all-the-icons-material "event"                    :face 'all-the-icons-red))
-            (Operator      . ,(all-the-icons-material "control_point"            :face 'all-the-icons-red))
-            (TypeParameter . ,(all-the-icons-material "class"                    :face 'all-the-icons-red))
-            (Template      . ,(all-the-icons-material "short_text"               :face 'all-the-icons-green))
-            (ElispFunction . ,(all-the-icons-material "functions"                :face 'all-the-icons-red))
-            (ElispVariable . ,(all-the-icons-material "check_circle"             :face 'all-the-icons-blue))
-            (ElispFeature  . ,(all-the-icons-material "stars"                    :face 'all-the-icons-orange))
-            (ElispFace     . ,(all-the-icons-material "format_paint"             :face 'all-the-icons-pink)))))
-
-  ;; HACK Fix oversized scrollbar in some odd cases
-  ;; REVIEW `resize-mode' is deprecated and may stop working in the future.
-  ;; TODO PR me upstream?
-  (setq x-gtk-resize-child-frames 'resize-mode)
-
-  ;; Disable tab-bar in company-box child frames
-  ;; TODO PR me upstream!
-  (add-to-list 'company-box-frame-parameters '(tab-bar-lines . 0))
-
-  ;; Don't show documentation in echo area, because company-box displays its own
-  ;; in a child frame.
-  (delq 'company-echo-metadata-frontend company-frontends)
-
-  (defun +company-box-icons--elisp-fn (candidate)
-    (when (derived-mode-p 'emacs-lisp-mode)
-      (let ((sym (intern candidate)))
-        (cond ((fboundp sym)  'ElispFunction)
-              ((boundp sym)   'ElispVariable)
-              ((featurep sym) 'ElispFeature)
-              ((facep sym)    'ElispFace)))))
-  )
-
-(use-package company-dict
-  :defer t
+  (add-to-list 'corfu-margin-formatters #'kind-icon-margin-formatter)
+  (setq kind-icon-blend-frac 0.08)
+)
+;;;;; TUI 支持
+(use-package corfu-terminal
+  :ensure t
   :config
-  (setq company-dict-dir (expand-file-name "dicts" doom-user-dir))
-  (add-hook! 'doom-project-hook
-    (defun +company-enable-project-dicts-h (mode &rest _)
-      "Enable per-project dictionaries."
-      (if (symbol-value mode)
-          (add-to-list 'company-dict-minor-mode-list mode nil #'eq)
-        (setq company-dict-minor-mode-list (delq mode company-dict-minor-mode-list))))))
+  (unless (display-graphic-p)
+    (corfu-terminal-mode 1)))
 
 (use-package google-translate
   :ensure t

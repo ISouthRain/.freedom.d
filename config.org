@@ -2,10 +2,10 @@
 ** Info
 ⚠ 这是个人配置，不建议其他人使用 ⚠
 ** Use guide
-+ git clone https://github.com/ISouthRain/.freedom.d
+- git clone https://github.com/ISouthRain/.freedom.d
 - mv ~/.emacs.d ~/.emacs.d.bk
-+ mkdir -p ~/.emacs.d
-+ cp ~/.freedom.d/init.el ~/.emacs.d/
+- mkdir -p ~/.emacs.d
+- cp ~/.freedom.d/init.el ~/.emacs.d/
 ** Configure
 *** Package-archives
 #+begin_src emacs-lisp :tangle yes
@@ -16,12 +16,13 @@
                        ("melpa" . "http://melpa.org/packages/")
                        ("org" . "http://orgmode.org/elpa/")
                        ("gnu" . "https://elpa.gnu.org/packages/")
+                       ("nongnu" . "https://elpa.nongnu.org/nongnu/")
                        ))
   (package-initialize)
   (unless (package-installed-p 'use-package)
     (customize-set-variable
      'package-archives '(("elpa-local" . "~/.freedom.d/.local/elpa-local/")))
-    (package-refresh-contents)
+    ;; (package-refresh-contents)
     (package-install 'use-package))
   )
 
@@ -256,7 +257,8 @@
        '("/" . meow-keypad-describe-key)
        '("?" . meow-cheatsheet))
       (meow-normal-define-key
-       '("0" . meow-expand-0)
+       ;; '("0" . meow-expand-0)
+       '("0" . move-beginning-of-line)
        '("9" . meow-expand-9)
        '("8" . meow-expand-8)
        '("7" . meow-expand-7)
@@ -377,16 +379,12 @@
       #'+meow-chord-insert-exit)
     (defun +meow-insert-exit ()
       (interactive)
-      (meow-insert-exit)
-      ;; (corfu-quit)
-  )
+      (meow-insert-exit))
 
     (defun +meow-visual ()
       (interactive)
       (meow-left-expand)
       (meow-right-expand))
-
-
     )
 
 #+end_src
@@ -501,7 +499,10 @@
   :ensure t
   :defer 0.5
   :bind (:map vertico-map
-         ("DEL" . vertico-directory-delete-char))
+         ("DEL" . vertico-directory-delete-char)
+         ("TAB" . vertico-next)
+         ("S-TAB" . vertico-previous)
+)
   :config
   (vertico-mode t)
   (setq vertico-count 15))
@@ -937,6 +938,11 @@
           (light . doom-solarized-light)))
   )
 #+end_src
+**** org-cliplink
+#+begin_src emacs-lisp :tangle yes
+(use-package org-cliplink :ensure t)
+#+end_src
+
 **** org-crypt
 #+begin_src emacs-lisp :tangle yes
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -979,20 +985,10 @@
 ;; yasnippet 补全
 (use-package yasnippet
   :ensure t
-  :defer 0.5
   :config
-  (setq yas-global-mode 1)
   (setq yas--default-user-snippets-dir (format "%ssnippets" freedom-emacs-directory))
   (setq yas-snippet-dirs '("~/.freedom.d/snippets"))
- (defun my-company-yasnippet-disable-inline (fun command &optional arg &rest _ignore)
-    "Enable yasnippet but disable it inline."
-    (if (eq command 'prefix)
-        (when-let ((prefix (funcall fun 'prefix)))
-          (unless (memq (char-before (- (point) (length prefix))) '(?. ?> ?\())
-            prefix))
-      (funcall fun command arg)))
-  (advice-add #'company-yasnippet :around #'my-company-yasnippet-disable-inline)
-
+  (yas-global-mode)
    )
 #+end_src
 
@@ -1134,6 +1130,12 @@
 
 #+end_src
 
+**** evil-nerd-comment
+#+begin_src emacs-lisp :tangle yes
+(use-package evil-nerd-commenter :ensure t
+  :bind ("C-x C-;" . evilnc-comment-or-uncomment-lines))
+#+end_src
+
 *** Navigation
 **** avy
 #+begin_src emacs-lisp :tangle yes
@@ -1203,7 +1205,6 @@
 ;; elfeed-org
 (use-package elfeed-org
   :ensure t
-  :hook (elfeed-search . elfeed-org)
   :init
   (setq rmh-elfeed-org-files (list (expand-file-name "elfeed.org" freedom-emacs-directory)))
   )
@@ -1415,7 +1416,7 @@ nil means disabled."
 
 *** Complation 补全
 **** company
-#+begin_src emacs-lisp :tangle yes
+#+begin_src emacs-lisp :tangle no
 (use-package company
   :ensure t
   :bind (:map company-active-map
@@ -1568,47 +1569,71 @@ nil means disabled."
 #+end_src
 
 **** corfu
-#+begin_src emacs-lisp :tangle no
-(use-package corfu
-  :ensure t
-  :defer 0.5
-  :hook ((prog-mode . corfu-mode)
-         (shell-mode . corfu-mode)
-         (eshell-mode . corfu-mode)
-         (corfu-mode . corfu-history-mode)
-         (corfu-mode . corfu-indexed-mode)
-         (after-init . global-corfu-mode)
-         )
-  :bind
-  (:map corfu-map
-   ("TAB" . corfu-next)
-   ([tab] . corfu-next)
-   ("S-TAB" . corfu-previous)
-   ([backtab] . corfu-previous)
-   ;; ("SPC" . corfu-insert-separator) ;; 空格后依然补全
-   )
-  :config
-  (setq global-corfu-mode
-        '(not erc-mode
-              circe-mode
-              message-mode
-              help-mode
-              gud-mode
-              vterm-mode))
-  (setq corfu-auto-delay 0.1
-        corfu-auto-prefix 2)
-  :config
-  (setq corfu-cycle t)                ;; Enable cycling for `corfu-next/previous'
-  (setq corfu-auto t)                 ;; Enable auto completion
-  (setq corfu-separator ?\s)          ;; Orderless field separator
-  (setq corfu-quit-at-boundary t)   ;; 空格后要不要退出补全 Never quit at completion boundary
-  (setq corfu-quit-no-match nil)      ;; Never quit, even if there is no match
-  (setq corfu-preview-current nil)    ;; Disable current candidate preview
-  (setq corfu-preselect-first nil)    ;; Disable candidate preselection
-  (setq corfu-on-exact-match nil)     ;; Configure handling of exact matches
-  (setq corfu-echo-documentation nil) ;; Disable documentation in the echo area
-  (setq corfu-scroll-margin 5)        ;; Use scroll margin
+#+begin_src emacs-lisp :tangle yes
+  (use-package corfu
+    :ensure t
+    :defer 0.5
+    :hook ((prog-mode . corfu-mode)
+           (shell-mode . corfu-mode)
+           (eshell-mode . corfu-mode)
+           (corfu-mode . corfu-history-mode)
+           (corfu-mode . corfu-indexed-mode)
+           (after-init . global-corfu-mode)
+           )
+    :bind
+    (:map corfu-map
+     ("TAB" . corfu-next)
+     ([tab] . corfu-next)
+     ("S-TAB" . corfu-previous)
+     ([backtab] . corfu-previous)
+     ;; ("M-SPC" . corfu-insert-separator) ;; 空格后依然补全
+     ("M-SPC" . corfu-quick-complete) ;; 空格后依然补全
+     ("M-m" . corfu-move-to-minibuffer) ;; 在 minibuffer 中补全
+     )
+    :config
+    (setq global-corfu-mode
+          '(not erc-mode
+                circe-mode
+                message-mode
+                help-mode
+                gud-mode
+                vterm-mode))
+    (setq corfu-auto-delay 0.1
+          corfu-auto-prefix 2)
+    :config
+    (setq corfu-cycle t)                ;; Enable cycling for `corfu-next/previous'
+    (setq corfu-auto t)                 ;; Enable auto completion
+    (setq corfu-separator ?\s)          ;; Orderless field separator
+    (setq corfu-quit-at-boundary t)   ;; 空格后要不要退出补全 Never quit at completion boundary
+    (setq corfu-quit-no-match 'separator)      ;; Never quit, even if there is no match
+    (setq corfu-preview-current nil)    ;; Disable current candidate preview
+    (setq corfu-preselect-first nil)    ;; Disable candidate preselection
+    (setq corfu-on-exact-match nil)     ;; Configure handling of exact matches
+    (setq corfu-echo-documentation nil) ;; Disable documentation in the echo area
+    (setq corfu-scroll-margin 5)        ;; Use scroll margin
+    ;; 在 minibuffer 中补全 
+    (defun corfu-move-to-minibuffer ()
+       (interactive)
+       (let ((completion-extra-properties corfu--extra)
+             completion-cycle-threshold completion-cycling)
+         (apply #'consult-completion-in-region completion-in-region--data)))
+    )
+  ;;;;; 图标
+  (use-package kind-icon
+    :ensure t
+    :after corfu
+    :custom
+    (kind-icon-default-face 'corfu-default) ; to compute blended backgrounds correctly
+    :config
+    (add-to-list 'corfu-margin-formatters #'kind-icon-margin-formatter)
+    (setq kind-icon-blend-frac 0.08)
   )
+  ;;;;; TUI 支持
+  (use-package corfu-terminal
+    :ensure t
+    :config
+    (unless (display-graphic-p)
+      (corfu-terminal-mode 1)))
 #+end_src
 
 *** Translate
