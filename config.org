@@ -1211,6 +1211,8 @@
   :ensure t
   :init
   (setq rmh-elfeed-org-files (list (expand-file-name "elfeed.org" freedom-emacs-directory)))
+  :config
+(elfeed-org)
   )
 #+end_src
 
@@ -1222,7 +1224,7 @@
   :ensure nil
   :commands (gnus)
   :init
-  (setq auth-sources '("~/.doom.d/.authinfo.gpg"))
+  (setq auth-sources '("~/.freedom.d/.authinfo.gpg"))
   :config
   (defcustom freedom-email-select 'QQ
     "Set Email.

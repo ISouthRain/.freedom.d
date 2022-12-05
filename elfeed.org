@@ -1,32 +1,32 @@
 * blogs         :elfeed:
 ** bilibili      :Bilibili:
 *** https://rsshub.app/bilibili/user/video/31012715
-    是老胡没错
+是老胡没错
 *** https://rsshub.app/bilibili/user/video/19642758
-    力元君
+力元君
 *** https://rsshub.app/bilibili/user/video/488779255
-    动漫作业本
+动漫作业本
 *** https://rsshub.app/bilibili/user/video/517327498
-    罗翔说刑法
+罗翔说刑法
 *** https://rsshub.app/bilibili/user/video/405370021
-    尴尬的铁根 er
+尴尬的铁根 er
 ** reader :Reader:
 *** https://www.zhihu.com/rss
-    知乎每日精选
+知乎每日精选
 *** https://rsshub.app/novel/ptwxz/13/13191
-    万相之王
+万相之王
 *** https://emacstalk.github.io/podcast/index.xml
-    Emacs Talk
+Emacs Talk
 *** http://feeds.feedburner.com/ruanyifeng
-    阮一峰
+阮一峰
 *** http://www.ruanyifeng.com/blog/atom.xml
-    阮一峰
+阮一峰
 ** Twitter :Twitter:
 *** https://rsshub.app/twitter/user/PiCoreTeam
-    PiNetwork
+PiNetwork
 *** https://rsshub.app/twitter/user/checkra1n
-    Checkra1n
+Checkra1n
 
 ** Youtube :Youtube:
 *** https://rsshub.app/youtube/channel/UCvijahEyGtvMpmMHBu4FS2w
-    零度解说
+零度解说
