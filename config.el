@@ -72,6 +72,7 @@
   (setq inhibit-startup-message t)
   ;;自动换行
   (toggle-truncate-lines 1)
+  (global-visual-line-mode 1)
   ;; 行号
   (setq display-line-numbers 'relative
         display-line-numbers-type 'relative)
@@ -197,8 +198,9 @@
      ;; '("c SPC" . align-regexp)
      '("fr" . consult-recent-file)
      '("fy" . google-translate-smooth-translate)
-     '("fs" . save-buffer)
      ;; '("fy" . gts-do-translate)
+     '("fs" . save-buffer)
+     '("fp" . Myconfig)
      '("qR" . restart-emacs)
      '("qq" . save-buffers-kill-terminal)
      '("wk" . windmove-up)
@@ -215,7 +217,7 @@
      '("op" . dired)
      '("pf" . projectile-find-file)
      '("pd" . projectile-find-dir)
-     '("ps" . projectile-ripgrep)
+     '("ps" . ripgrep-regexp)
      '("pa" . projectile-add-known-project)
      '("pb" . projectile-switch-to-buffer)
      '("pS" . projectile-switch-project)
@@ -542,7 +544,14 @@
   (setq org-cycle-include-plain-lists 'integrate)
   ;; 隐藏语法符号 例如: *粗体* , * 符号会被隐藏
   (setq-default org-hide-emphasis-markers t)
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  (org-babel-do-load-languages
+   'org-babel-load-languages
+    '((C .t)
+      (emacs-lisp .t)
+      (python . t)
+      (latex . t)
+      ))
   ;;代码块高亮
   (setq org-src-fontify-natively t)
   ;;不自动tab
@@ -772,7 +781,8 @@
   :defer 0.5
   :hook (org-mode . org-superstar-mode)
   :custom
-  (org-superstar-headline-bullets-list '("☰" "☱" "☲" "☳" "☴" "☵" "☶" "☷"))
+  ;; (org-superstar-headline-bullets-list '("☰" "☱" "☲" "☳" "☴" "☵" "☶" "☷"))
+  (org-superstar-headline-bullets-list '("Ⅰ" "Ⅱ" "Ⅲ" "Ⅳ" "Ⅴ" "Ⅵ" "Ⅶ" "Ⅷ"))
   (org-superstar-item-bullet-alist '((43 . "⬧") (45 . "⬨")))
   )
 
