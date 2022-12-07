@@ -360,7 +360,8 @@
     #'+meow-chord-insert-exit)
   (defun +meow-insert-exit ()
     (interactive)
-    (meow-insert-exit))
+    (meow-insert-exit)
+(corfu-quit))
 
   (defun +meow-visual ()
     (interactive)
