@@ -110,5 +110,8 @@
 (defun Myconfig ()
   (interactive)
   (find-file "~/.freedom.d/config.org"))
+  
+(recentf-mode 1)
+(save-place-mode 1)
 
 (provide 'init-basic)

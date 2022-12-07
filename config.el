@@ -321,8 +321,8 @@
   (meow-global-mode 1)
   (setq meow-expand-hint-remove-delay 3
         meow-use-clipboard t)
-
   )
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (use-package meow
   :ensure nil
@@ -556,10 +556,10 @@
   (setq org-src-fontify-natively t)
   ;;不自动tab
   (setq org-src-tab-acts-natively nil)
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   ;; org 图片设置
   ;;打开Org文件自动显示图片
-  (setq org-startup-with-inline-images t)
+  (setq org-startup-with-inline-images nil)
   ;;图片显示1/3尺寸
   (setq org-image-actual-width (/ (display-pixel-width) 3))
   ;;图片显示 300 高度，如果图片小于 300，会被拉伸。
@@ -944,14 +944,14 @@
 ;; aggressive-indent 自动缩进
 (use-package aggressive-indent :ensure t :hook (emacs-lisp-mode . aggressive-indent-mode))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; elec-pair 自动补全括号
 (use-package elec-pair
   :ensure nil
   :hook (after-init . electric-pair-mode)
   :init (setq electric-pair-inhibit-predicate 'electric-pair-conservative-inhibit))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; rainbow-delimiters 彩虹括号
 (use-package rainbow-delimiters :ensure t :hook (prog-mode . rainbow-delimiters-mode))
 
@@ -960,7 +960,8 @@
 (use-package highlight-indent-guides
   :ensure t
   :defer 0.5
-  :hook ((prog-mode text-mode conf-mode) . highlight-indent-guides-mode)
+  ;; :hook ((prog-mode text-mode conf-mode) . highlight-indent-guides-mode)
+  :hook ((python-mode emacs-lisp-mode c-mode nix-mode) . highlight-indent-guides-mode)
   :init
   (setq highlight-indent-guides-method 'character
         highlight-indent-guides-suppress-auto-error t)
@@ -972,7 +973,13 @@
             (defun +indent-guides-disable-maybe-h ()
               (and highlight-indent-guides-mode
                    (bound-and-true-p org-indent-mode)
-                   (highlight-indent-guides-mode -1)))))
+                   (highlight-indent-guides-mode -1))))
+(defun -highlight-indent-guides-mode ()
+    (interactive)
+(highlight-indent-guides-mode))
+  (add-hook 'gnus-article-prepare-hook 'gnus-article-date-local) ;将邮件的发出时间转换为本地时间
+
+)
 
 (use-package evil-nerd-commenter :ensure t
   :bind ("C-x C-;" . evilnc-comment-or-uncomment-lines))

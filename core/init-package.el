@@ -52,6 +52,10 @@
                       markdown-toc
                       pyim-basedict
                       pyim
+                      lsp-mode
+                      dumb-jump
+                      nix-mode
+                      vimrc-mode
 ))
 
 (eval-and-compile

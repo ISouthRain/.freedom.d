@@ -22,20 +22,20 @@
 (savehist-mode)
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Optionally use the `orderless' completion style.
-;; (use-package orderless
-;;   :config
-;;   (setq completion-styles '(orderless basic)
-;;         completion-category-defaults nil
-;;         completion-category-overrides '((file (styles partial-completion))))
-;;   ;; 据说这样设置可以让 eglot corfu orderless
-;;   ;; (setq completion-styles '(orderless flex)
-;;   ;;       completion-category-overrides '((eglot (styles . (orderless flex)))))
+(use-package orderless
+  :config
+  (setq completion-styles '(orderless basic)
+        completion-category-defaults nil
+        completion-category-overrides '((file (styles partial-completion))))
+  ;; 据说这样设置可以让 eglot corfu orderless
+  ;; (setq completion-styles '(orderless flex)
+  ;;       completion-category-overrides '((eglot (styles . (orderless flex)))))
 
-;;   ;; 对 vertico 进行拼音补全, 全拼的第一个字母
-;;   (defun completion--regex-pinyin (str)
-;;     (orderless-regexp (pinyinlib-build-regexp-string str)))
-;;   (add-to-list 'orderless-matching-styles 'completion--regex-pinyin)
-;;   )
+  ;; 对 vertico 进行拼音补全, 全拼的第一个字母
+  (defun completion--regex-pinyin (str)
+    (orderless-regexp (pinyinlib-build-regexp-string str)))
+  (add-to-list 'orderless-matching-styles 'completion--regex-pinyin)
+  )
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; marginalia
 (marginalia-mode)

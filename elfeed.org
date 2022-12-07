@@ -26,7 +26,6 @@ Emacs Talk
 PiNetwork
 *** https://rsshub.app/twitter/user/checkra1n
 Checkra1n
-
-** Youtube :Youtube:
+** Youtube                                                         :Youtube:
 *** https://rsshub.app/youtube/channel/UCvijahEyGtvMpmMHBu4FS2w
 零度解说
