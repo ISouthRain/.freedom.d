@@ -181,12 +181,13 @@
      '("k" . meow-prev)
      '("h" . meow-left)
      '("l" . meow-right)
-     '("e" . meow-next-word)
-     '("b" . meow-back-word)
+     '("y" . meow-save)
+     '("f" . avy-goto-char)
      '("i" . meow-insert)  
      '("." . meow-inner-of-thing)
      '("," . meow-bounds-of-thing)
      '("v" . +meow-visual)
+     '("C-s" . consult-linei)
      '("<escape>" . ignore))
     (meow-leader-define-key
      ;; SPC j/k will run the original command in MOTION state.
@@ -195,7 +196,7 @@
      '("bb" . consult-buffer)
      '("bi" . ibuffer)
      '("bk" . kill-this-buffer)
-     ;; '("c SPC" . align-regexp)
+     '("ca" . align-regexp)
      '("fr" . consult-recent-file)
      '("fy" . google-translate-smooth-translate)
      ;; '("fy" . gts-do-translate)
@@ -264,8 +265,8 @@
      '("D" . meow-backward-delete)
      '("e" . meow-next-word)
      '("E" . meow-next-symbol)
-     '("f" . meow-find)
-     '("F" . avy-goto-char)
+     ;; '("f" . meow-find)
+     '("f" . avy-goto-char)
      '("g" . meow-cancel-selection)
      ;; '("gb" . end-of-buffer)
      ;; '("gg" . beginning-of-buffer)
@@ -639,7 +640,7 @@
 
             ;;日志
             ("j" "Journal" entry (file+datetree "~/MyFile/Org/Journal.org")
-             "* %<%H:%M> %^{记些什么} %?\n  %i\n" :kill-buffer t :immediate-finish t :prepend 1)
+             "* %<%H:%M> %^{记些什么} %?\n  %i" :kill-buffer t :immediate-finish t :prepend 1)
 
             ;;日程安排
             ("a" "日程安排" plain (file+function "~/MyFile/Org/GTD/Agenda.org" find-month-tree)
@@ -676,7 +677,7 @@
 
             ;;日志
             ("j" "Journal" entry (file+datetree "~/Desktop/MyFile/Org/Journal.org" )
-             "* %<%H:%M> %^{记些什么} %?\n  %i\n" :kill-buffer t :immediate-finish t :prepend 1)
+             "* %<%H:%M> %^{记些什么} %?\n  %i" :kill-buffer t :immediate-finish t :prepend 1)
 
             ;;日程安排
             ("a" "日程安排" plain (file+function "~/Destop/MyFile/Org/GTD/Agenda.org" find-month-tree)
@@ -712,7 +713,7 @@
 
             ;;日志
             ("j" "Journal" entry (file+datetree "F:\\MyFile\\Org\\Journal.org")
-             "* %<%H:%M> %^{记些什么} %?\n  %i\n" :kill-buffer t :immediate-finish t :prepend 1)
+             "* %<%H:%M> %^{记些什么} %?\n  %i" :kill-buffer t :immediate-finish t :prepend 1)
 
             ;;日程安排
             ("a" "日程安排" plain (file+function "F:\\MyFile\\Org\\GTD\\Agenda.org" find-month-tree)
@@ -1509,18 +1510,15 @@ nil means disabled."
 (use-package dumb-jump
   :ensure t
   :hook '((xref-backend-functions . dumb-jump-xref-activate))
-  :bind (:map dumb-jump-mode-map
-         ("j" . next-line)
-         ("k" . previous-line))
   :config
   (setq xref-show-definitions-function #'consult-xref
-        xref-show-definitions-function #'consult-xref))
+        xref-show-definitions-function #'consult-xref)
+  (setq dumb-jump-selector 'completing-read)
+  (setq dumb-jump-default-project freedom-emacs-directory))
 
 (use-package vimrc-mode :ensure t
-  :mode "\\.vindrc\\'"
   :config
-  (add-to-list 'auto-mode-alist '(("\\.vim\\(rc\\)?\\'" . vimrc-mode)
-                                  )))
+  (add-to-list 'auto-mode-alist '("\\.vim\\(rc\\)?\\'" . vimrc-mode)))
 
 (use-package nix-mode
   :ensure t
