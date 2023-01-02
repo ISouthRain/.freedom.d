@@ -1,7 +1,0 @@
-# key: ```
-# name: 代码块
-# --
-#+BEGIN_SRC $1
-$2
-#+END_SRC
-$3

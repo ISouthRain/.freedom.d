@@ -168,11 +168,12 @@
   (defun Myconfig ()
     (interactive)
     (find-file "~/.freedom.d/config.org"))
-
+    
   )
 
 (use-package meow
   :ensure t
+  :defer 1
   :config
   (defun meow-setup ()
     (setq meow-cheatsheet-layout meow-cheatsheet-layout-qwerty)
@@ -202,6 +203,7 @@
      ;; '("fy" . gts-do-translate)
      '("fs" . save-buffer)
      '("fp" . Myconfig)
+     '("ie" . emojify-insert-emoji)
      '("qR" . restart-emacs)
      '("qq" . save-buffers-kill-terminal)
      '("wk" . windmove-up)
@@ -313,6 +315,8 @@
      '(">" . indent-rigidly-right)
      '("<" . indent-rigidly-left)
      '("C-r" . undo-tree-redo)
+     ;; '("C-f" . scroll-up)
+     ;; '("C-b" . scroll-down)
      '("\"" . consult-yank-pop)
      '("<f12>" . dumb-jump-go)
      ;; '("<escape>" . ignore)
@@ -322,13 +326,7 @@
   (meow-global-mode 1)
   (setq meow-expand-hint-remove-delay 3
         meow-use-clipboard t)
-  )
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-(use-package meow
-  :ensure nil
-  :defer t
-  :config
   (defun +meow-insert-chord-two (s otherfunction keydelay)
     "类似 key-chord 功能"
     (when (meow-insert-mode-p)
@@ -356,13 +354,9 @@
     #'+meow-chord-pyim)
   (defun +meow-chord-insert-exit ()
     (interactive)
-    (+meow-insert-chord-two "jk" #'+meow-insert-exit 0.5))
+    (+meow-insert-chord-two "jk" #'meow-insert-exit 0.5))
   (define-key meow-insert-state-keymap (substring "jk" 0 1)
     #'+meow-chord-insert-exit)
-  (defun +meow-insert-exit ()
-    (interactive)
-    (meow-insert-exit)
-(corfu-quit))
 
   (defun +meow-visual ()
     (interactive)
@@ -459,8 +453,6 @@
   :defer 0.5
   :bind (:map vertico-map
          ("DEL" . vertico-directory-delete-char)
-         ;; ("TAB" . vertico-next)
-         ;; ("S-TAB" . vertico-previous)
          )
   :config
   (vertico-mode t)
@@ -492,7 +484,7 @@
   (add-to-list 'orderless-matching-styles 'completion--regex-pinyin)
   )
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Search content in the file
 (use-package consult :ensure t :defer 0.5)
 
@@ -500,8 +492,7 @@
 ;; 显示介绍
 (use-package marginalia :ensure t :defer 0.5 :hook (after-init . marginalia-mode))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; ;; A few more useful configurations...
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; ;; A few more useful configurations...
 (use-package emacs
   :defer 0.5
   :ensure nil
@@ -1258,6 +1249,7 @@ nil means disabled."
          (corfu-mode . corfu-history-mode)
          (corfu-mode . corfu-indexed-mode)
          (after-init . global-corfu-mode)
+         (meow-normal-mode . corfu-quit)
          )
   :bind
   (:map corfu-map
