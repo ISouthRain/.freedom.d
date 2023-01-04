@@ -14,7 +14,7 @@
     (package-refresh-contents)
     (package-install 'use-package))
   )
-
+  
 (setq freedom-emacs-directory "~/.freedom.d/"
       custom-file "~/.emacs.d/custom.el")
 (use-package elpa-mirror
@@ -633,6 +633,10 @@
             ("j" "Journal" entry (file+datetree "~/MyFile/Org/Journal.org")
              "* %<%H:%M> %^{记些什么} %?\n  %i" :kill-buffer t :immediate-finish t :prepend 1)
 
+            ;;工作日志
+            ("J" "工作日志" entry (file+datetree "~/MyFile/Org/Work.org")
+             "* %<%H:%M> %^{记些什么} %?\n  %i" :kill-buffer t :immediate-finish t :prepend 1)
+
             ;;日程安排
             ("a" "日程安排" plain (file+function "~/MyFile/Org/GTD/Agenda.org" find-month-tree)
              "*** [#%^{优先级}] %^{安排} \n SCHEDULED: %^T \n  :地点: %^{地点}\n" :kill-buffer t :immediate-finish t)
@@ -670,6 +674,10 @@
             ("j" "Journal" entry (file+datetree "~/Desktop/MyFile/Org/Journal.org" )
              "* %<%H:%M> %^{记些什么} %?\n  %i" :kill-buffer t :immediate-finish t :prepend 1)
 
+            ;;日志
+            ("J" "工作日志" entry (file+datetree "~/Desktop/MyFile/Org/Work.org" )
+             "* %<%H:%M> %^{记些什么} %?\n  %i" :kill-buffer t :immediate-finish t :prepend 1)
+
             ;;日程安排
             ("a" "日程安排" plain (file+function "~/Destop/MyFile/Org/GTD/Agenda.org" find-month-tree)
              "*** [#%^{优先级}] %^{安排} \n SCHEDULED: %^T \n  :地点: %^{地点}\n" :kill-buffer t :immediate-finish t)
@@ -704,6 +712,10 @@
 
             ;;日志
             ("j" "Journal" entry (file+datetree "F:\\MyFile\\Org\\Journal.org")
+             "* %<%H:%M> %^{记些什么} %?\n  %i" :kill-buffer t :immediate-finish t :prepend 1)
+
+            ;;日志
+            ("J" "工作日志" entry (file+datetree "F:\\MyFile\\Org\\Work.org")
              "* %<%H:%M> %^{记些什么} %?\n  %i" :kill-buffer t :immediate-finish t :prepend 1)
 
             ;;日程安排
@@ -841,6 +853,35 @@
     (or org-download-image-dir (concat "./Attachment/" (file-name-nondirectory (file-name-sans-extension (buffer-file-name))) )))
   (advice-add #'org-download--dir-1 :override #'my-org-download--dir-1)
   )
+
+(defvar bootstrap-version)
+(let ((bootstrap-file
+       (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
+      (bootstrap-version 6))
+  (unless (file-exists-p bootstrap-file)
+    (with-current-buffer
+        (url-retrieve-synchronously
+         "https://raw.githubusercontent.com/radian-software/straight.el/develop/install.el"
+         'silent 'inhibit-cookies)
+      (goto-char (point-max))
+      (eval-print-last-sexp)))
+  (load bootstrap-file nil 'nomessage))
+(use-package dash :straight (:type built-in))
+(use-package s :straight (:type built-in))
+(use-package org :straight (:type built-in))
+(use-package org-html-themify
+  :straight
+  (org-html-themify
+   :type git
+   :host github
+   :repo "DogLooksGood/org-html-themify"
+   :files ("*.el" "*.js" "*.css"))
+   :hook (org-mode . org-html-themify-mode)
+   :config
+   (setq org-html-themify-themes
+     '((dark . doom-one)
+     (light . doom-solarized-light)))
+   )
 
 (use-package org-cliplink :ensure t)
 
