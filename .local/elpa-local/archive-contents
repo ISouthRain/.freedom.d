@@ -46,7 +46,7 @@
  (marginalia . [(20221016 1017) ((emacs (27 1))) "Enrich existing commands with completion annotations" tar])
  (markdown-mode . [(20221022 735) ((emacs (26 1))) "Major mode for Markdown-formatted text" tar])
  (markdown-toc . [(20210905 738) ((s (1 9 0)) (dash (2 11 0)) (markdown-mode (2 1))) "A simple TOC generator for markdown file" tar])
- (meow . [(20221012 26) ((emacs (27 1))) "Yet Another modal editing" tar])
+ (meow . [(20221216 42) ((emacs (27 1))) "Yet Another modal editing" tar])
  (nix-mode . [(20221202 228) ((emacs (25 1)) (magit-section (0)) (transient (0 3))) "Major mode for editing .nix files" tar])
  (orderless . [(20220918 48) ((emacs (26 1))) "Completion style for matching regexps in any order" tar])
  (org-cliplink . [(20201126 1020) ((emacs (24 4))) "insert org-mode links from the clipboard" tar])

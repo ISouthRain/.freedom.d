@@ -73,16 +73,16 @@
   ;;自动换行
   (toggle-truncate-lines 1)
   (global-visual-line-mode 1)
-  ;; 行号
+  ;; 行号设置
   (setq display-line-numbers 'relative
         display-line-numbers-type 'relative)
   (setq display-line-numbers-width 3
         display-line-numbers-widen 1)
   (global-display-line-numbers-mode t)
   ;;显示时间
-  (setq display-time-mode t) ;; 常显
+  (display-time-mode 1) ;; 常显
   (setq display-time-24hr-format t) ;;格式
-  (setq display-time-day-and-date t) ;;显示时间、星期、日期
+  ;; (setq display-time-day-and-date t) ;;显示时间、星期、日期
   ;; 关闭启动帮助画面
   (setq inhibit-splash-screen 1)
   ;; 关闭备份文件
@@ -119,31 +119,18 @@
             '((top . 60) (left . 400) (width . 85) (height . 39)))
       ;; (add-hook 'window-setup-hook #'toggle-frame-maximized t)
       ;; (add-hook 'window-setup-hook #'toggle-frame-fullscreen t)
-      ;; )
       ))
   (when (string= "windows-nt" system-type)
     ;; 调整启动时窗口位置/大小/最大化/全屏
     (setq initial-frame-alist
-          '((top . 20) (left . 450) (width . 105) (height . 48)))
-    ;; (add-hook 'window-setup-hook #'toggle-frame-maximized t)
-    ;; (add-hook 'window-setup-hook #'toggle-frame-fullscreen t)
-    ;; )
-    )
-  (when (string= "darwin" system-type)
-    (custom-set-faces
-     '(default ((t (:family "Courier New" :foundry "outline" :slant normal :weight normal :height 195 :width normal)))))
-    )
-  ;;; Proxy
-  (setq url-proxy-services '(
-                             ("http" . "127.0.0.1:7890")
+          '((top . 20) (left . 450) (width . 105) (height . 48))))
+  ;;; Proxy 代理
+  (setq url-proxy-services '(("http" . "127.0.0.1:7890")
                              ("https" . "127.0.0.1:7890")))
   (when freedom/is-linux
     (when (not freedom/is-termux)
-      (setq url-proxy-services '(
-                                 ("http" . "192.168.1.3:7890")
-                                 ("https" . "192.168.1.3:7890")))
-      )
-    )
+      (setq url-proxy-services '(("http" . "192.168.1.11:7890")
+                                 ("https" . "192.168.1.11:7890")))))
 ;;; function
   (defun freedom/sudo-this-file ()
     "Open the current file as root."
@@ -167,13 +154,11 @@
                       file))))
   (defun Myconfig ()
     (interactive)
-    (find-file "~/.freedom.d/config.org"))
-    
-  )
+    (find-file "~/.freedom.d/config.org")))
 
 (use-package meow
   :ensure t
-  :defer 1
+  :defer 0.5
   :config
   (defun meow-setup ()
     (setq meow-cheatsheet-layout meow-cheatsheet-layout-qwerty)
@@ -378,12 +363,13 @@
 (when (not freedom/is-termux)
   (use-package posframe :ensure t))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; emojify
 (when (not freedom/is-termux)
   (use-package emojify
     :ensure t
-    :hook (after-init . global-emojify-mode)))
+    :hook (after-init . global-emojify-mode))
+    :init (setq emojify-emojis-dir "~/.emacs.d/elpa/emojify-20210108.1111/emojis"))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; cnfonts Org-mode 中英文字体对齐
@@ -411,6 +397,7 @@
   )
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; 自动切换主题
 ;; (use-package circadian
 ;;   :ensure t
 ;;   :config
@@ -443,6 +430,7 @@
          ("C-h C-d" . helpful-at-point)
          ("C-h F" . helpful-function)
          ("C-h C" . helpful-command)
+         ("C-h C-a" . helpful-at-point)
          )
   )
 
@@ -452,18 +440,15 @@
   :ensure t
   :defer 0.5
   :bind (:map vertico-map
-         ("DEL" . vertico-directory-delete-char)
-         )
+         ("DEL" . vertico-directory-delete-char))
   :config
   (vertico-mode t)
-  (setq vertico-count 15))
+  (setq vertico-count 12))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (use-package savehist
   :ensure nil
-  :defer 0.5
-  :hook (after-init . savehist-mode)
-  )
+  :hook (vertico-mode . savehist-mode))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Optionally use the `orderless' completion style.
@@ -486,17 +471,17 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Search content in the file
-(use-package consult :ensure t :defer 0.5)
+(use-package consult :ensure t)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; 显示介绍
-(use-package marginalia :ensure t :defer 0.5 :hook (after-init . marginalia-mode))
+(use-package marginalia :ensure t :hook (after-init . marginalia-mode))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; ;; A few more useful configurations...
 (use-package emacs
-  :defer 0.5
   :ensure nil
-  :init
+  :defer 0.5
+  :config
   ;; Add prompt indicator to `completing-read-multiple'.
   ;; We display [CRM<separator>], e.g., [CRM,] if the separator is a comma.
   (defun crm-indicator (args)
@@ -519,8 +504,7 @@
   :ensure nil
   :hook '((org-mode . org-indent-mode))
   :custom
-  ;; ;; (org-ellipsis " ⭍")
-  ;; ;; (org-ellipsis " ⤵")
+  ;; (org-ellipsis " ⭍")
   (org-pretty-entities t)
   (org-hide-leading-stars t)
   (org-hide-emphasis-markers t)
@@ -543,13 +527,12 @@
     '((C .t)
       (emacs-lisp .t)
       (python . t)
-      (latex . t)
-      ))
+      (latex . t)))
   ;;代码块高亮
   (setq org-src-fontify-natively t)
   ;;不自动tab
   (setq org-src-tab-acts-natively nil)
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   ;; org 图片设置
   ;;打开Org文件自动显示图片
   (setq org-startup-with-inline-images nil)
@@ -557,8 +540,7 @@
   (setq org-image-actual-width (/ (display-pixel-width) 3))
   ;;图片显示 300 高度，如果图片小于 300，会被拉伸。
   (setq org-image-actual-width '(500))
-
-  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   ;; Agenda Soure File
   (when freedom/is-windows
     (setq org-agenda-files (list
@@ -582,12 +564,9 @@
                                  ("❓" . warning))
         org-priority-faces '((?A . error)
                              (?B . warning)
-                             (?C . success))
-        )
+                             (?C . success))))
 
-  )
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; org 通知设置
 (use-package appt
   :ensure nil
@@ -749,7 +728,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   ;; 创建org-capture 按键夹,必须创建才能用多按键
   (add-to-list 'org-capture-templates '("z" "账单"));;与上面的账单相对应
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
   ;; Capture Configuration 记录账单函数
   ;;用 org-capture 记录账单
   (defun get-year-and-month ()
@@ -783,7 +762,6 @@
 ;; org-superstar 美化标题，表格，列表 之类的
 (use-package org-superstar
   :ensure t
-  :defer 0.5
   :hook (org-mode . org-superstar-mode)
   :custom
   ;; (org-superstar-headline-bullets-list '("☰" "☱" "☲" "☳" "☴" "☵" "☶" "☷"))
@@ -902,7 +880,7 @@
     (goto-char (point-min))
     (while (search-forward "\r" nil t) (replace-match ""))
     (org-decrypt-entry))
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; 不知道作用
   (setq epg-gpg-program "gpg2"))
 
 (use-package projectile
@@ -913,15 +891,14 @@
   (use-package projectile-ripgrep :ensure t :pin elpa-local)
   )
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; yasnippet 补全
 (use-package yasnippet
   :ensure t
   :config
   (setq yas--default-user-snippets-dir (format "%ssnippets" freedom-emacs-directory))
   (setq yas-snippet-dirs '("~/.freedom.d/snippets"))
-  (yas-global-mode)
-   )
+  (yas-global-mode))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; 快速点击各类链接
@@ -929,12 +906,12 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Highlight some operations
-(use-package volatile-highlights :ensure t :diminish :hook (after-init . volatile-highlights-mode))
+(use-package volatile-highlights :ensure t :hook (after-init . volatile-highlights-mode))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (use-package magit :ensure t)
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; diff 高亮
 (use-package diff-hl
   :ensure t
@@ -966,8 +943,7 @@
 (use-package dired
   :ensure nil
   :commands (dired)
-  :hook '((dired-mode . all-the-icons-dired-mode)
-          )
+  :hook '((dired-mode . all-the-icons-dired-mode))
   :bind (:map dired-mode-map
          ("U" . dired-up-directory))
   :config
@@ -989,12 +965,12 @@
 ;; rainbow-delimiters 彩虹括号
 (use-package rainbow-delimiters :ensure t :hook (prog-mode . rainbow-delimiters-mode))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; 指导线
+;; 此模式开启时 org-mode 非常卡
 (use-package highlight-indent-guides
   :ensure t
   :defer 0.5
-  ;; :hook ((prog-mode text-mode conf-mode) . highlight-indent-guides-mode)
   :hook ((python-mode emacs-lisp-mode c-mode nix-mode) . highlight-indent-guides-mode)
   :init
   (setq highlight-indent-guides-method 'character
@@ -1012,7 +988,6 @@
     (interactive)
 (highlight-indent-guides-mode))
   (add-hook 'gnus-article-prepare-hook 'gnus-article-date-local) ;将邮件的发出时间转换为本地时间
-
 )
 
 (use-package evil-nerd-commenter :ensure t
@@ -1033,8 +1008,7 @@
 (use-package ace-window
   :ensure t
   :config
-  (setq aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l ?r ?i ?t ?o ?u ?t ?v ?n))
-  )
+  (setq aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l ?r ?i ?t ?o ?u ?t ?v ?n)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; zoom 自动调整窗口大小
@@ -1074,11 +1048,11 @@
 ;; elfeed-org
 (use-package elfeed-org
   :ensure t
+  :defer 1
   :init
   (setq rmh-elfeed-org-files (list (expand-file-name "elfeed.org" freedom-emacs-directory)))
   :config
-(elfeed-org)
-  )
+  (elfeed-org))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; gnus
@@ -1290,8 +1264,7 @@ nil means disabled."
          (corfu-mode . corfu-history-mode)
          (corfu-mode . corfu-indexed-mode)
          (after-init . global-corfu-mode)
-         (meow-normal-mode . corfu-quit)
-         )
+         (meow-normal-mode . corfu-quit))
   :bind
   (:map corfu-map
    ("TAB" . corfu-next)
@@ -1311,7 +1284,7 @@ nil means disabled."
               gud-mode
               vterm-mode))
   (setq corfu-auto-delay 0.1
-        corfu-auto-prefix 2)
+        corfu-auto-prefix 2);; 输入多少个词后开始补全
   :config
   (setq corfu-cycle t)                ;; Enable cycling for `corfu-next/previous'
   (setq corfu-auto t)                 ;; Enable auto completion
@@ -1328,18 +1301,18 @@ nil means disabled."
      (interactive)
      (let ((completion-extra-properties corfu--extra)
            completion-cycle-threshold completion-cycling)
-       (apply #'consult-completion-in-region completion-in-region--data)))
-  )
+       (apply #'consult-completion-in-region completion-in-region--data))))
+
 ;;;;; 图标
-(use-package kind-icon
-  :ensure t
-  :after corfu
-  :custom
-  (kind-icon-default-face 'corfu-default) ; to compute blended backgrounds correctly
-  :config
-  (add-to-list 'corfu-margin-formatters #'kind-icon-margin-formatter)
-  (setq kind-icon-blend-frac 0.08)
-)
+;; (use-package kind-icon
+;;   :ensure t
+;;   :after corfu
+;;   :custom
+;;   (kind-icon-default-face 'corfu-default) ; to compute blended backgrounds correctly
+;;   :config
+;;   (add-to-list 'corfu-margin-formatters #'kind-icon-margin-formatter)
+;;   (setq kind-icon-blend-frac 0.08))
+
 ;;;;; TUI 支持
 (use-package corfu-terminal
   :ensure t
@@ -1350,6 +1323,7 @@ nil means disabled."
 
 (use-package google-translate
   :ensure t
+  :defer 0.5
   :config
   (setq google-translate-default-source-language "auto"
         google-translate-default-target-language "zh-CN")
@@ -1366,9 +1340,7 @@ nil means disabled."
   :config
   (defun +freedom-english-corfu-toggle ()
     (interactive)
-    (toggle-corfu-english-helper))
-  )
-
+    (toggle-corfu-english-helper)))
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; 输入中文后自动翻译
 (use-package insert-translated-name
@@ -1388,14 +1360,9 @@ nil means disabled."
   :ensure t
   :defer 0.5
   :config
-  (use-package calfw-org
-    :ensure t)
-  (use-package calfw-ical
-    :ensure t
-    )
-  (use-package calfw-cal
-    :ensure t
-    )
+  (use-package calfw-org :ensure t)
+  (use-package calfw-ical :ensure t)
+  (use-package calfw-cal :ensure t)
   ;; Month
   (setq calendar-month-name-array
         ["一月" "二月" "三月" "四月" "五月"   "六月"
@@ -1419,6 +1386,7 @@ nil means disabled."
 ;; cal-china-x
 (use-package cal-china-x
   :ensure t
+  :defer 0.5
   :after calendar
   :commands cal-china-x-setup
   :init (cal-china-x-setup)
@@ -1475,7 +1443,7 @@ nil means disabled."
     (when (string= "windows-nt" system-type)
       (find-file "F:\\Hugo\\content\\posts\\Home.md"))
     )
-  ) ;; use-package end
+  )
 
 (use-package pyim-basedict :ensure t :pin elpa-local)
 (use-package pyim :ensure t :pin elpa-local :defer 0.5
