@@ -1,12 +1,10 @@
 (eval-and-compile
   (customize-set-variable
-   'package-archives '(
-                       ("elpa-local" . "~/.freedom.d/.local/elpa-local/")
+   'package-archives '(("elpa-local" . "~/.freedom.d/.local/elpa-local/")
                        ("melpa" . "http://melpa.org/packages/")
                        ("org" . "http://orgmode.org/elpa/")
                        ("gnu" . "https://elpa.gnu.org/packages/")
-                       ("nongnu" . "https://elpa.nongnu.org/nongnu/")
-                       ))
+                       ("nongnu" . "https://elpa.nongnu.org/nongnu/")))
   (package-initialize)
   (unless (package-installed-p 'use-package)
     (customize-set-variable
@@ -17,9 +15,11 @@
   
 (setq freedom-emacs-directory "~/.freedom.d/"
       custom-file "~/.emacs.d/custom.el")
+(add-to-list 'load-path "~/.freedom.d/core/plugins")
+(require 'on)
 (use-package elpa-mirror
   :ensure t
-  :defer 0.5
+  :commands (elpamr-create-mirror-for-installed)
   :config
   (setq elpamr-default-output-directory (format "%s.local/elpa-local" freedom-emacs-directory)))
 
@@ -33,12 +33,10 @@
     (setq locale-coding-system 'gb18030)  ;此句保证中文字体设置有效
     (setq w32-unicode-filenames 'nil)       ; 确保file-name-coding-system变量的设置不会无效
     (setq file-name-coding-system 'gb18030) ; 设置文件名的编码为gb18030
-    )
-  )
+    ))
 
 (use-package subr-x
   :ensure nil
-  :defer t
   :config
   (setq freedom/is-termux
         (string-suffix-p "Android" (string-trim (shell-command-to-string "uname -a"))))
@@ -46,14 +44,12 @@
   (setq freedom/is-darwin (and (eq system-type 'darwin)))
   (setq freedom/is-windows (and (eq system-type 'windows-nt)))
   (setq freedom/is-gui (if (display-graphic-p) t))
-  (setq freedom/is-tui (not (display-graphic-p)))
-  )
+  (setq freedom/is-tui (not (display-graphic-p))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; basic
 (use-package emacs
   :ensure nil
-  :defer 0.5
   :config
   ;; 设置Emacs标题
   (setq frame-title-format '("Happy Emacs - %b")
@@ -80,9 +76,9 @@
         display-line-numbers-widen 1)
   (global-display-line-numbers-mode t)
   ;;显示时间
-  (display-time-mode 1) ;; 常显
   (setq display-time-24hr-format t) ;;格式
   ;; (setq display-time-day-and-date t) ;;显示时间、星期、日期
+  (display-time-mode 1) ;; 常显
   ;; 关闭启动帮助画面
   (setq inhibit-splash-screen 1)
   ;; 关闭备份文件
@@ -123,7 +119,7 @@
   (when (string= "windows-nt" system-type)
     ;; 调整启动时窗口位置/大小/最大化/全屏
     (setq initial-frame-alist
-          '((top . 20) (left . 450) (width . 105) (height . 48))))
+          '((top . 20) (left . 450) (width . 95) (height . 33))))
   ;;; Proxy 代理
   (setq url-proxy-services '(("http" . "127.0.0.1:7890")
                              ("https" . "127.0.0.1:7890")))
@@ -158,7 +154,6 @@
 
 (use-package meow
   :ensure t
-  :defer 0.5
   :config
   (defun meow-setup ()
     (setq meow-cheatsheet-layout meow-cheatsheet-layout-qwerty)
@@ -353,10 +348,7 @@
 ;; awesome-tab 状态栏
 (use-package awesome-tab
   :ensure nil
-  :load-path "~/.freedom.d/core/plugins"
-  :defer 0.5
-  :config
-  (awesome-tab-mode t))
+  :hook (on-first-input . awesome-tab-mode))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; posframe
@@ -368,14 +360,13 @@
 (when (not freedom/is-termux)
   (use-package emojify
     :ensure t
-    :hook (after-init . global-emojify-mode))
+    :hook (on-first-file . global-emojify-mode))
     :init (setq emojify-emojis-dir "~/.emacs.d/elpa/emojify-20210108.1111/emojis"))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; cnfonts Org-mode 中英文字体对齐
 (use-package cnfonts
   :ensure t
-  :defer 0.5
   :config
   (when freedom/is-windows
     (setq cnfonts-directory (expand-file-name ".local/cnfonts/windows" freedom-emacs-directory)))
@@ -403,8 +394,7 @@
 ;;   :config
 ;;   (setq circadian-themes '(("8:00" . doom-one)
 ;;                            ("17:30" . doom-one)))
-;;   (circadian-setup)
-;;   )
+;;   (circadian-setup))
 (use-package doom-themes
   :ensure t
   :config
@@ -417,8 +407,7 @@
   :ensure t
   :after all-the-icons
   :pin elpa-local
-  :config
-  (doom-modeline-mode 1)
+  :hook (window-setup . doom-modeline-mode)
   )
 
 (use-package helpful
@@ -430,31 +419,28 @@
          ("C-h C-d" . helpful-at-point)
          ("C-h F" . helpful-function)
          ("C-h C" . helpful-command)
-         ("C-h C-a" . helpful-at-point)
-         )
-  )
+         ("C-h C-a" . helpful-at-point)))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; vertico minibuffer 补全
 (use-package vertico
   :ensure t
-  :defer 0.5
+  :hook (on-first-input . vertico-mode)
+  :commands (vertico-mode)
   :bind (:map vertico-map
          ("DEL" . vertico-directory-delete-char))
   :config
-  (vertico-mode t)
   (setq vertico-count 12))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (use-package savehist
   :ensure nil
   :hook (vertico-mode . savehist-mode))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Optionally use the `orderless' completion style.
 (use-package orderless
   :ensure t
-  :defer 0.5
   :config
   (setq completion-styles '(orderless basic)
         completion-category-defaults nil
@@ -469,18 +455,17 @@
   (add-to-list 'orderless-matching-styles 'completion--regex-pinyin)
   )
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Search content in the file
 (use-package consult :ensure t)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; 显示介绍
-(use-package marginalia :ensure t :hook (after-init . marginalia-mode))
+(use-package marginalia :ensure t :hook (vertico-mode . marginalia-mode))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; ;; A few more useful configurations...
 (use-package emacs
   :ensure nil
-  :defer 0.5
   :config
   ;; Add prompt indicator to `completing-read-multiple'.
   ;; We display [CRM<separator>], e.g., [CRM,] if the separator is a comma.
@@ -566,11 +551,10 @@
                              (?B . warning)
                              (?C . success))))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; org 通知设置
 (use-package appt
   :ensure nil
-  :defer 0.5
   :hook (org-agenda-finalize . org-agenda-to-appt)
   :config
   ;; 每小时同步一次appt,并且现在就开始同步
@@ -597,7 +581,6 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (use-package org
   :ensure nil
-  :defer 0.5
   :config
   (setq org-capture-bookmark nil)
   (when (string= "gnu/linux" system-type)
@@ -680,8 +663,7 @@
              "+  %?" :kill-buffer t :prepend 1)
             ))
     )
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-  ;; org-protocol-capture-html Capture Configuration windows-nt
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; org-protocol-capture-html Capture Configuration windows-nt
   (when (string= "windows-nt" system-type)
     (setq org-capture-templates
           '(
@@ -764,8 +746,8 @@
   :ensure t
   :hook (org-mode . org-superstar-mode)
   :custom
-  ;; (org-superstar-headline-bullets-list '("☰" "☱" "☲" "☳" "☴" "☵" "☶" "☷"))
-  (org-superstar-headline-bullets-list '("Ⅰ" "Ⅱ" "Ⅲ" "Ⅳ" "Ⅴ" "Ⅵ" "Ⅶ" "Ⅷ"))
+  (org-superstar-headline-bullets-list '("☰" "☱" "☲" "☳" "☴" "☵" "☶" "☷"))
+  ;; (org-superstar-headline-bullets-list '("Ⅰ" "Ⅱ" "Ⅲ" "Ⅳ" "Ⅴ" "Ⅵ" "Ⅶ" "Ⅷ"))
   (org-superstar-item-bullet-alist '((43 . "⬧") (45 . "⬨")))
   )
 
@@ -773,6 +755,7 @@
 ;; org-roam
 (use-package org-roam
   :ensure t
+  :hook (on-first-input . org-roam-db-autosync-mode)
   :init
   (when (string= "windows-nt" system-type)
     (setq org-roam-directory (file-truename "F:\\MyFile\\Org")))
@@ -781,8 +764,6 @@
   (when (string= "darwin" system-type)
     (setq org-roam-directory (file-truename "~/Desktop/MyFile/Org/")))
   :config
-  ;;搜索
-  (setq org-roam-node-display-template "${title}")
   ;;补全
   (setq org-roam-completion-everywhere t)
   ;;一个也可以设置org-roam-db-node-include-function。例如，ATTACH要从 Org-roam 数据库中排除所有带有标签的标题，可以设置：
@@ -802,7 +783,6 @@
   (setq org-roam-node-display-template
         (concat "${type:15} ${title:*} " (propertize "${tags:10}" 'face 'org-tag)))
   (setq org-roam-db-update-on-save t)
-  (org-roam-db-autosync-mode 1)
   (setq org-roam-database-connector 'sqlite)
   )
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -819,7 +799,6 @@
 ;; org-download
 (use-package org-download
   :ensure t
-  :defer 1
   :hook (dired-mode . org-download-enable)
   :config
   ;; (add-hook 'dired-mode-hook 'org-download-enable)
@@ -866,8 +845,8 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; org 标题加密， 只需添加 :crypt:
 (use-package org-crypt
-  :defer 0.5
   :ensure nil
+  :after org
   :config
   (org-crypt-use-before-save-magic)
   (setq org-tags-exclude-from-inheritance '("crypt"))
@@ -885,7 +864,7 @@
 
 (use-package projectile
   :ensure t
-  :hook (after-init . projectile-mode)
+  :hook (window-setup . projectile-mode)
   :config
   (use-package ripgrep :ensure t :pin elpa-local)
   (use-package projectile-ripgrep :ensure t :pin elpa-local)
@@ -895,18 +874,18 @@
 ;; yasnippet 补全
 (use-package yasnippet
   :ensure t
+  :hook (on-first-input . yas-global-mode)
   :config
   (setq yas--default-user-snippets-dir (format "%ssnippets" freedom-emacs-directory))
-  (setq yas-snippet-dirs '("~/.freedom.d/snippets"))
-  (yas-global-mode))
+  (setq yas-snippet-dirs '("~/.freedom.d/snippets")))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; 快速点击各类链接
 (use-package ace-link :ensure t :config (ace-link-setup-default))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Highlight some operations
-(use-package volatile-highlights :ensure t :hook (after-init . volatile-highlights-mode))
+(use-package volatile-highlights :ensure t :hook (on-first-buffer . volatile-highlights-mode))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (use-package magit :ensure t)
@@ -915,7 +894,7 @@
 ;; diff 高亮
 (use-package diff-hl
   :ensure t
-  :hook '((after-init . global-diff-hl-mode)
+  :hook '((window-setup . global-diff-hl-mode)
           (magit-pre-refresh . diff-hl-magit-pre-refresh)
           (magit-post-refresh . diff-hl-magit-post-refresh)))
 
@@ -923,7 +902,7 @@
 ;; 高亮括号匹配
 (use-package paren
   :ensure nil
-  :hook (after-init . show-paren-mode)
+  :hook (on-first-file . show-paren-mode)
   :init
   (setq show-paren-when-point-in-periphery t
         show-paren-when-point-inside-paren t))
@@ -931,7 +910,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (use-package undo-tree
   :ensure t
-  :hook (after-init . global-undo-tree-mode)
+  :hook (on-first-file . global-undo-tree-mode)
   :config
   (setq undo-tree-history-directory-alist '(("." . "~/.emacs.d/undo-tree")))
   (setq undo-tree-visualizer-diff t
@@ -958,7 +937,7 @@
 ;; elec-pair 自动补全括号
 (use-package elec-pair
   :ensure nil
-  :hook (after-init . electric-pair-mode)
+  :hook (on-first-file . electric-pair-mode)
   :init (setq electric-pair-inhibit-predicate 'electric-pair-conservative-inhibit))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -970,7 +949,6 @@
 ;; 此模式开启时 org-mode 非常卡
 (use-package highlight-indent-guides
   :ensure t
-  :defer 0.5
   :hook ((python-mode emacs-lisp-mode c-mode nix-mode) . highlight-indent-guides-mode)
   :init
   (setq highlight-indent-guides-method 'character
@@ -993,15 +971,44 @@
 (use-package evil-nerd-commenter :ensure t
   :bind ("C-x C-;" . evilnc-comment-or-uncomment-lines))
 
+(use-package auto-save
+  :ensure nil
+  :hook (on-first-input . auto-save-enable)
+  :config
+  (setq auto-save-silent t))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; 窗口透明
+(defun sanityinc/adjust-opacity (frame incr)
+  "Adjust the background opacity of FRAME by increment INCR."
+  (unless (display-graphic-p frame)
+    (error "Cannot adjust opacity of this frame"))
+  (let* ((oldalpha (or (frame-parameter frame 'alpha) 100))
+         (oldalpha (if (listp oldalpha) (car oldalpha) oldalpha))
+         (newalpha (+ incr oldalpha)))
+    (when (and (<= frame-alpha-lower-limit newalpha) (>= 100 newalpha))
+      (modify-frame-parameters frame (list (cons 'alpha newalpha))))))
+(defun freedom-window-opacity-add ()
+  "增加 窗口透明度"
+  (interactive)
+  (sanityinc/adjust-opacity nil -2))
+(defun freedom-window-opacity-toreduce ()
+  "减少 窗口透明度"
+  (interactive)
+  (sanityinc/adjust-opacity nil 2))
+(defun freedom-window-opacity-clear ()
+  "重置 窗口透明度"
+  (interactive)
+  (modify-frame-parameters nil `((alpha . 100))))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; avy 单词跳跃
 (use-package avy :ensure t)
 (use-package ace-pinyin
-  :defer 0.5
   :ensure t
   :after avy
   :init (setq ace-pinyin-use-avy t)
-  :config (ace-pinyin-global-mode t))
+  :hook (on-first-input . ace-pinyin-global-mode))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; ace-window 窗口跳跃
@@ -1014,7 +1021,6 @@
 ;; zoom 自动调整窗口大小
 (use-package zoom
   :ensure t
-  :defer 0.5
   :config
   (custom-set-variables
    '(zoom-mode t))
@@ -1023,12 +1029,11 @@
   (defun size-callback ()
     (cond ((> (frame-pixel-width) 1280) '(90 . 0.75))
           (t                            '(0.5 . 0.5))))
-
-  (custom-set-variables
-   '(zoom-size 'size-callback))
+          (custom-set-variables
+          '(zoom-size 'size-callback))
   )
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; elfeed
 (use-package elfeed
   :ensure t
@@ -1040,19 +1045,14 @@
   :config
   ;; recentf 排除
   (when recentf-mode
-    (push elfeed-db-directory recentf-exclude))
-  ;; (setq elfeed-show-entry-switch #'pop-to-buffer
-  ;;       shr-max-image-proportion 0.8)
-  )
+    (push elfeed-db-directory recentf-exclude)))
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; elfeed-org
 (use-package elfeed-org
   :ensure t
-  :defer 1
   :init
   (setq rmh-elfeed-org-files (list (expand-file-name "elfeed.org" freedom-emacs-directory)))
-  :config
-  (elfeed-org))
+  :hook (on-first-input . elfeed-org))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; gnus
@@ -1257,13 +1257,12 @@ nil means disabled."
 
 (use-package corfu
   :ensure t
-  :defer 0.5
   :hook ((prog-mode . corfu-mode)
          (shell-mode . corfu-mode)
          (eshell-mode . corfu-mode)
          (corfu-mode . corfu-history-mode)
          (corfu-mode . corfu-indexed-mode)
-         (after-init . global-corfu-mode)
+         (on-first-file . global-corfu-mode)
          (meow-normal-mode . corfu-quit))
   :bind
   (:map corfu-map
@@ -1323,30 +1322,26 @@ nil means disabled."
 
 (use-package google-translate
   :ensure t
-  :defer 0.5
   :config
   (setq google-translate-default-source-language "auto"
         google-translate-default-target-language "zh-CN")
   (setq google-translate-translation-directions-alist
-        '(("en" . "zh-CN") ("zh-CN" . "en")))
-  )
+        '(("en" . "zh-CN") ("zh-CN" . "en"))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (use-package corfu-english-helper
   :ensure nil
-  :defer 0.5
   :after corfu
-  :load-path "~/.freedom.d/core/plugins"
   :config
-  (defun +freedom-english-corfu-toggle ()
+  (defun freedom-english-corfu-toggle ()
     (interactive)
     (toggle-corfu-english-helper)))
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; 输入中文后自动翻译
 (use-package insert-translated-name
   :ensure nil
-  :defer 0.5
-  :load-path "~/.freedom.d/core/plugins/"
+  :bind ("C-\\". insert-translated-name-insert)
+  :commands (insert-translated-name-insert)
   :config
   (setq insert-translated-name-translate-engine "youdao");; ;google  youdao
   (defun freedom-english-translate ()
@@ -1358,7 +1353,7 @@ nil means disabled."
 ;; calfw
 (use-package calfw
   :ensure t
-  :defer 0.5
+  :commands (calendar)
   :config
   (use-package calfw-org :ensure t)
   (use-package calfw-ical :ensure t)
@@ -1372,7 +1367,7 @@ nil means disabled."
         ["周末" "周一" "周二" "周三" "周四" "周五" "周六"])
   ;; First day of the week
   (setq calendar-week-start-day 0) ; 0:Sunday, 1:Monday
-  (defun cfw:freedom-calendar ()
+  (defun freedom-calendar ()
     (interactive)
     (cfw:open-calendar-buffer
      :contents-sources
@@ -1386,7 +1381,6 @@ nil means disabled."
 ;; cal-china-x
 (use-package cal-china-x
   :ensure t
-  :defer 0.5
   :after calendar
   :commands cal-china-x-setup
   :init (cal-china-x-setup)
@@ -1424,7 +1418,6 @@ nil means disabled."
 ;; markdown-mode
 (use-package markdown-mode
   :ensure t
-  :defer 1
   ;; :commands (markdown-mode gfm-mode)
   :mode (("README\\.md\\'" . gfm-mode)
          ("\\.md\\'" . markdown-mode)
@@ -1446,11 +1439,10 @@ nil means disabled."
   )
 
 (use-package pyim-basedict :ensure t :pin elpa-local)
-(use-package pyim :ensure t :pin elpa-local :defer 0.5
+(use-package pyim :ensure t :pin elpa-local
   :init
   (setq pyim-dcache-directory (format "%s.local/pyim" freedom-emacs-directory))
   (setq default-input-method "pyim")
-  :bind ("C-\\". freedom-english-translate)
   :config
   (pyim-basedict-enable);; 为 pyim 添加词库
   (pyim-default-scheme 'xiaohe-shuangpin) ;;
@@ -1506,7 +1498,8 @@ nil means disabled."
 
 (use-package lsp-mode :ensure t
   :hook '((c-mode . lsp)
-          (python-mode . lsp)))
+          (python-mode . lsp)
+          (js2-mode . lsp)))
 
 (use-package dumb-jump
   :ensure t
@@ -1526,5 +1519,7 @@ nil means disabled."
   :mode "\\.nix\\'")
 
 (use-package restart-emacs :ensure t)
-(recentf-mode 1)
-(save-place-mode 1)
+;;(recentf-mode 1)
+;;(save-place-mode 1)
+(add-hook 'on-first-file-hook 'recentf-mode)
+(add-hook 'on-first-file-hook 'save-place-mode)

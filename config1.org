@@ -15,11 +15,13 @@
 #+begin_src emacs-lisp :tangle yes
 (eval-and-compile
   (customize-set-variable
-   'package-archives '(("elpa-local" . "~/.freedom.d/.local/elpa-local/")
+   'package-archives '(
+                       ("elpa-local" . "~/.freedom.d/.local/elpa-local/")
                        ("melpa" . "http://melpa.org/packages/")
                        ("org" . "http://orgmode.org/elpa/")
                        ("gnu" . "https://elpa.gnu.org/packages/")
-                       ("nongnu" . "https://elpa.nongnu.org/nongnu/")))
+                       ("nongnu" . "https://elpa.nongnu.org/nongnu/")
+                       ))
   (package-initialize)
   (unless (package-installed-p 'use-package)
     (customize-set-variable
@@ -31,10 +33,10 @@
 (setq freedom-emacs-directory "~/.freedom.d/"
       custom-file "~/.emacs.d/custom.el")
 (add-to-list 'load-path "~/.freedom.d/core/plugins")
-(require 'on)
+;; (require 'on)
 (use-package elpa-mirror
   :ensure t
-  :commands (elpamr-create-mirror-for-installed)
+  :defer 0.5
   :config
   (setq elpamr-default-output-directory (format "%s.local/elpa-local" freedom-emacs-directory)))
 #+end_src
@@ -51,13 +53,15 @@
     (setq locale-coding-system 'gb18030)  ;此句保证中文字体设置有效
     (setq w32-unicode-filenames 'nil)       ; 确保file-name-coding-system变量的设置不会无效
     (setq file-name-coding-system 'gb18030) ; 设置文件名的编码为gb18030
-    ))
+    )
+  )
 #+end_src
 
 *** System
 #+begin_src emacs-lisp :tangle yes
 (use-package subr-x
   :ensure nil
+  :defer t
   :config
   (setq freedom/is-termux
         (string-suffix-p "Android" (string-trim (shell-command-to-string "uname -a"))))
@@ -65,7 +69,8 @@
   (setq freedom/is-darwin (and (eq system-type 'darwin)))
   (setq freedom/is-windows (and (eq system-type 'windows-nt)))
   (setq freedom/is-gui (if (display-graphic-p) t))
-  (setq freedom/is-tui (not (display-graphic-p))))
+  (setq freedom/is-tui (not (display-graphic-p)))
+  )
 #+end_src
 
 *** Emacs Basic
@@ -74,6 +79,7 @@
 ;; basic
 (use-package emacs
   :ensure nil
+  :defer 0.5
   :config
   ;; 设置Emacs标题
   (setq frame-title-format '("Happy Emacs - %b")
@@ -100,9 +106,9 @@
         display-line-numbers-widen 1)
   (global-display-line-numbers-mode t)
   ;;显示时间
+  (display-time-mode 1) ;; 常显
   (setq display-time-24hr-format t) ;;格式
   ;; (setq display-time-day-and-date t) ;;显示时间、星期、日期
-  (display-time-mode 1) ;; 常显
   ;; 关闭启动帮助画面
   (setq inhibit-splash-screen 1)
   ;; 关闭备份文件
@@ -143,7 +149,7 @@
   (when (string= "windows-nt" system-type)
     ;; 调整启动时窗口位置/大小/最大化/全屏
     (setq initial-frame-alist
-          '((top . 20) (left . 450) (width . 95) (height . 33))))
+          '((top . 20) (left . 450) (width . 105) (height . 48))))
   ;;; Proxy 代理
   (setq url-proxy-services '(("http" . "127.0.0.1:7890")
                              ("https" . "127.0.0.1:7890")))
@@ -180,197 +186,198 @@
 *** Package Install
 **** Meow
 #+begin_src emacs-lisp :tangle yes
-(use-package meow
-  :ensure t
-  :config
-  (defun meow-setup ()
-    (setq meow-cheatsheet-layout meow-cheatsheet-layout-qwerty)
-    (meow-motion-overwrite-define-key
-     '("j" . meow-next)
-     '("k" . meow-prev)
-     '("h" . meow-left)
-     '("l" . meow-right)
-     '("y" . meow-save)
-     '("f" . avy-goto-char)
-     '("i" . meow-insert)  
-     '("." . meow-inner-of-thing)
-     '("," . meow-bounds-of-thing)
-     '("v" . +meow-visual)
-     '("C-s" . consult-linei)
-     '("<escape>" . ignore))
-    (meow-leader-define-key
-     ;; SPC j/k will run the original command in MOTION state.
-     '("j" . "H-j")
-     '("k" . "H-k")
-     '("bb" . consult-buffer)
-     '("bi" . ibuffer)
-     '("bk" . kill-this-buffer)
-     '("ca" . align-regexp)
-     '("fr" . consult-recent-file)
-     '("fy" . google-translate-smooth-translate)
-     ;; '("fy" . gts-do-translate)
-     '("fs" . save-buffer)
-     '("fp" . Myconfig)
-     '("ie" . emojify-insert-emoji)
-     '("qR" . restart-emacs)
-     '("qq" . save-buffers-kill-terminal)
-     '("wk" . windmove-up)
-     '("wj" . windmove-down)
-     '("wh" . windmove-left)
-     '("wl" . windmove-right)
-     '("wd" . delete-window)
-     '("ws" . split-window-below)
-     '("wv" . split-window-right)
-     '("ww" . ace-window)
-     '("sp" . consult-ripgrep)
-     '("si" . consult-imenu)
-     '("oa" . org-agenda)
-     '("op" . dired)
-     '("pf" . projectile-find-file)
-     '("pd" . projectile-find-dir)
-     '("ps" . ripgrep-regexp)
-     '("pa" . projectile-add-known-project)
-     '("pb" . projectile-switch-to-buffer)
-     '("pS" . projectile-switch-project)
-     '("nn" . org-capture)
-     '("nrf" . org-roam-node-find)
-     '("nrs" . org-roam-db-sync)
-     ;; Use SPC (0-9) for digit arguments.
-     '("1" . meow-digit-argument)
-     '("2" . meow-digit-argument)
-     '("3" . meow-digit-argument)
-     '("4" . meow-digit-argument)
-     '("5" . meow-digit-argument)
-     '("6" . meow-digit-argument)
-     '("7" . meow-digit-argument)
-     '("8" . meow-digit-argument)
-     '("9" . meow-digit-argument)
-     '("0" . meow-digit-argument)
-     '("/" . meow-keypad-describe-key)
-     '("?" . meow-cheatsheet))
-    (meow-normal-define-key
-     ;; '("0" . meow-expand-0)
-     '("0" . move-beginning-of-line)
-     '("9" . meow-expand-9)
-     '("8" . meow-expand-8)
-     '("7" . meow-expand-7)
-     '("6" . meow-expand-6)
-     '("5" . meow-expand-5)
-     '("4" . meow-expand-4)
-     '("3" . meow-expand-3)
-     '("2" . meow-expand-2)
-     '("1" . meow-expand-1)
-     '("-" . negative-argument)
-     '(";" . meow-reverse)
-     '("." . meow-inner-of-thing)
-     '("," . meow-bounds-of-thing)
-     '("[" . meow-beginning-of-thing)
-     '("]" . meow-end-of-thing)
-     '("a" . meow-append)
-     '("A" . meow-open-below)
-     '("b" . meow-back-word)
-     '("B" . meow-back-symbol)
-     '("c" . meow-change)
-     '("d" . meow-delete)
-     '("D" . meow-backward-delete)
-     '("e" . meow-next-word)
-     '("E" . meow-next-symbol)
-     ;; '("f" . meow-find)
-     '("f" . avy-goto-char)
-     '("g" . meow-cancel-selection)
-     ;; '("gb" . end-of-buffer)
-     ;; '("gg" . beginning-of-buffer)
-     ;; '("gd" . xref-find-definitions)
-     ;; '("gD" . xref-pop-marker-stack)
-     '("G" . meow-grab)
-     '("h" . meow-left)
-     '("H" . meow-left-expand)
-     '("i" . meow-insert)
-     '("I" . meow-open-above)
-     '("j" . meow-next)
-     '("J" . meow-next-expand)
-     '("k" . meow-prev)
-     '("K" . meow-prev-expand)
-     '("l" . meow-right)
-     '("L" . meow-right-expand)
-     '("m" . meow-join)
-     '("n" . meow-search)
-     '("o" . meow-block)
-     '("O" . meow-to-block)
-     '("p" . meow-yank)
-     '("q" . meow-quit)
-     '("Q" . meow-goto-line)
-     '("r" . meow-replace)
-     '("R" . meow-swap-grab)
-     '("s" . meow-clipboard-kill)
-     '("t" . meow-till)
-     '("u" . undo-tree-undo)
-     '("U" . meow-undo-in-selection)
-     ;;'("v" . meow-visit)
-     '("v" . +meow-visual)
-     '("w" . meow-mark-word)
-     '("W" . meow-mark-symbol)
-     '("x" . meow-line)
-     '("X" . avy-goto-line)
-     '("y" . meow-save)
-     '("Y" . meow-sync-grab)
-     '("z" . meow-pop-selection)
-     '("'" . repeat)
-     '("$" . move-end-of-line)
-     '("/" . consult-line)
-     '("C-s" . consult-line)
-     '("=" . meow-indent)
-     '(">" . indent-rigidly-right)
-     '("<" . indent-rigidly-left)
-     '("C-r" . undo-tree-redo)
-     ;; '("C-f" . scroll-up)
-     ;; '("C-b" . scroll-down)
-     '("\"" . consult-yank-pop)
-     '("<f12>" . dumb-jump-go)
-     ;; '("<escape>" . ignore)
-     '("<escape>" . meow-cancel-selection)
-     ))
-  (meow-setup)
-  (meow-global-mode 1)
-  (setq meow-expand-hint-remove-delay 3
-        meow-use-clipboard t)
+  (use-package meow
+    :ensure t
+    :defer 0.5
+    :config
+    (defun meow-setup ()
+      (setq meow-cheatsheet-layout meow-cheatsheet-layout-qwerty)
+      (meow-motion-overwrite-define-key
+       '("j" . meow-next)
+       '("k" . meow-prev)
+       '("h" . meow-left)
+       '("l" . meow-right)
+       '("y" . meow-save)
+       '("f" . avy-goto-char)
+       '("i" . meow-insert)  
+       '("." . meow-inner-of-thing)
+       '("," . meow-bounds-of-thing)
+       '("v" . +meow-visual)
+       '("C-s" . consult-linei)
+       '("<escape>" . ignore))
+      (meow-leader-define-key
+       ;; SPC j/k will run the original command in MOTION state.
+       '("j" . "H-j")
+       '("k" . "H-k")
+       '("bb" . consult-buffer)
+       '("bi" . ibuffer)
+       '("bk" . kill-this-buffer)
+       '("ca" . align-regexp)
+       '("fr" . consult-recent-file)
+       '("fy" . google-translate-smooth-translate)
+       ;; '("fy" . gts-do-translate)
+       '("fs" . save-buffer)
+       '("fp" . Myconfig)
+       '("ie" . emojify-insert-emoji)
+       '("qR" . restart-emacs)
+       '("qq" . save-buffers-kill-terminal)
+       '("wk" . windmove-up)
+       '("wj" . windmove-down)
+       '("wh" . windmove-left)
+       '("wl" . windmove-right)
+       '("wd" . delete-window)
+       '("ws" . split-window-below)
+       '("wv" . split-window-right)
+       '("ww" . ace-window)
+       '("sp" . consult-ripgrep)
+       '("si" . consult-imenu)
+       '("oa" . org-agenda)
+       '("op" . dired)
+       '("pf" . projectile-find-file)
+       '("pd" . projectile-find-dir)
+       '("ps" . ripgrep-regexp)
+       '("pa" . projectile-add-known-project)
+       '("pb" . projectile-switch-to-buffer)
+       '("pS" . projectile-switch-project)
+       '("nn" . org-capture)
+       '("nrf" . org-roam-node-find)
+       '("nrs" . org-roam-db-sync)
+       ;; Use SPC (0-9) for digit arguments.
+       '("1" . meow-digit-argument)
+       '("2" . meow-digit-argument)
+       '("3" . meow-digit-argument)
+       '("4" . meow-digit-argument)
+       '("5" . meow-digit-argument)
+       '("6" . meow-digit-argument)
+       '("7" . meow-digit-argument)
+       '("8" . meow-digit-argument)
+       '("9" . meow-digit-argument)
+       '("0" . meow-digit-argument)
+       '("/" . meow-keypad-describe-key)
+       '("?" . meow-cheatsheet))
+      (meow-normal-define-key
+       ;; '("0" . meow-expand-0)
+       '("0" . move-beginning-of-line)
+       '("9" . meow-expand-9)
+       '("8" . meow-expand-8)
+       '("7" . meow-expand-7)
+       '("6" . meow-expand-6)
+       '("5" . meow-expand-5)
+       '("4" . meow-expand-4)
+       '("3" . meow-expand-3)
+       '("2" . meow-expand-2)
+       '("1" . meow-expand-1)
+       '("-" . negative-argument)
+       '(";" . meow-reverse)
+       '("." . meow-inner-of-thing)
+       '("," . meow-bounds-of-thing)
+       '("[" . meow-beginning-of-thing)
+       '("]" . meow-end-of-thing)
+       '("a" . meow-append)
+       '("A" . meow-open-below)
+       '("b" . meow-back-word)
+       '("B" . meow-back-symbol)
+       '("c" . meow-change)
+       '("d" . meow-delete)
+       '("D" . meow-backward-delete)
+       '("e" . meow-next-word)
+       '("E" . meow-next-symbol)
+       ;; '("f" . meow-find)
+       '("f" . avy-goto-char)
+       '("g" . meow-cancel-selection)
+       ;; '("gb" . end-of-buffer)
+       ;; '("gg" . beginning-of-buffer)
+       ;; '("gd" . xref-find-definitions)
+       ;; '("gD" . xref-pop-marker-stack)
+       '("G" . meow-grab)
+       '("h" . meow-left)
+       '("H" . meow-left-expand)
+       '("i" . meow-insert)
+       '("I" . meow-open-above)
+       '("j" . meow-next)
+       '("J" . meow-next-expand)
+       '("k" . meow-prev)
+       '("K" . meow-prev-expand)
+       '("l" . meow-right)
+       '("L" . meow-right-expand)
+       '("m" . meow-join)
+       '("n" . meow-search)
+       '("o" . meow-block)
+       '("O" . meow-to-block)
+       '("p" . meow-yank)
+       '("q" . meow-quit)
+       '("Q" . meow-goto-line)
+       '("r" . meow-replace)
+       '("R" . meow-swap-grab)
+       '("s" . meow-clipboard-kill)
+       '("t" . meow-till)
+       '("u" . undo-tree-undo)
+       '("U" . meow-undo-in-selection)
+       ;;'("v" . meow-visit)
+       '("v" . +meow-visual)
+       '("w" . meow-mark-word)
+       '("W" . meow-mark-symbol)
+       '("x" . meow-line)
+       '("X" . avy-goto-line)
+       '("y" . meow-save)
+       '("Y" . meow-sync-grab)
+       '("z" . meow-pop-selection)
+       '("'" . repeat)
+       '("$" . move-end-of-line)
+       '("/" . consult-line)
+       '("C-s" . consult-line)
+       '("=" . meow-indent)
+       '(">" . indent-rigidly-right)
+       '("<" . indent-rigidly-left)
+       '("C-r" . undo-tree-redo)
+       ;; '("C-f" . scroll-up)
+       ;; '("C-b" . scroll-down)
+       '("\"" . consult-yank-pop)
+       '("<f12>" . dumb-jump-go)
+       ;; '("<escape>" . ignore)
+       '("<escape>" . meow-cancel-selection)
+       ))
+    (meow-setup)
+    (meow-global-mode 1)
+    (setq meow-expand-hint-remove-delay 3
+          meow-use-clipboard t)
+    
+    (defun +meow-insert-chord-two (s otherfunction keydelay)
+      "类似 key-chord 功能"
+      (when (meow-insert-mode-p)
+        (let ((modified (buffer-modified-p))
+              (undo-list buffer-undo-list))
+          (insert (elt s 0))
+          (let* ((second-char (elt s 1))
+                 (event
+                  (if defining-kbd-macro
+                      (read-event nil nil)
+                    (read-event nil nil keydelay))))
+            (when event
+              (if (and (characterp event) (= event second-char))
+                  (progn
+                    (backward-delete-char 1)
+                    (set-buffer-modified-p modified)
+                    (setq buffer-undo-list undo-list)
+                    (apply otherfunction nil))
+                (push event unread-command-events)))))))
 
-  (defun +meow-insert-chord-two (s otherfunction keydelay)
-    "类似 key-chord 功能"
-    (when (meow-insert-mode-p)
-      (let ((modified (buffer-modified-p))
-            (undo-list buffer-undo-list))
-        (insert (elt s 0))
-        (let* ((second-char (elt s 1))
-               (event
-                (if defining-kbd-macro
-                    (read-event nil nil)
-                  (read-event nil nil keydelay))))
-          (when event
-            (if (and (characterp event) (= event second-char))
-                (progn
-                  (backward-delete-char 1)
-                  (set-buffer-modified-p modified)
-                  (setq buffer-undo-list undo-list)
-                  (apply otherfunction nil))
-              (push event unread-command-events)))))))
+    (defun +meow-chord-pyim ()
+      (interactive)
+      (+meow-insert-chord-two ";;" #'toggle-input-method 0.5))
+    (define-key meow-insert-state-keymap (substring ";;" 0 1)
+      #'+meow-chord-pyim)
+    (defun +meow-chord-insert-exit ()
+      (interactive)
+      (+meow-insert-chord-two "jk" #'meow-insert-exit 0.5))
+    (define-key meow-insert-state-keymap (substring "jk" 0 1)
+      #'+meow-chord-insert-exit)
 
-  (defun +meow-chord-pyim ()
-    (interactive)
-    (+meow-insert-chord-two ";;" #'toggle-input-method 0.5))
-  (define-key meow-insert-state-keymap (substring ";;" 0 1)
-    #'+meow-chord-pyim)
-  (defun +meow-chord-insert-exit ()
-    (interactive)
-    (+meow-insert-chord-two "jk" #'meow-insert-exit 0.5))
-  (define-key meow-insert-state-keymap (substring "jk" 0 1)
-    #'+meow-chord-insert-exit)
-
-  (defun +meow-visual ()
-    (interactive)
-    (meow-left-expand)
-    (meow-right-expand))
-  )
+    (defun +meow-visual ()
+      (interactive)
+      (meow-left-expand)
+      (meow-right-expand))
+    )
 
 #+end_src
 
@@ -380,7 +387,8 @@
 ;; awesome-tab 状态栏
 (use-package awesome-tab
   :ensure nil
-  :hook (on-first-input . awesome-tab-mode))
+  :config
+  (awesome-tab-mode t))
 #+end_src
 
 **** posframe
@@ -398,16 +406,17 @@
 (when (not freedom/is-termux)
   (use-package emojify
     :ensure t
-    :hook (on-first-file . global-emojify-mode))
+    :hook (after-init . global-emojify-mode))
     :init (setq emojify-emojis-dir "~/.emacs.d/elpa/emojify-20210108.1111/emojis"))
 #+end_src
 
 **** cnfonts
 #+begin_src emacs-lisp :tangle yes
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; cnfonts Org-mode 中英文字体对齐
 (use-package cnfonts
   :ensure t
+  :defer 0.5
   :config
   (when freedom/is-windows
     (setq cnfonts-directory (expand-file-name ".local/cnfonts/windows" freedom-emacs-directory)))
@@ -438,7 +447,8 @@
 ;;   :config
 ;;   (setq circadian-themes '(("8:00" . doom-one)
 ;;                            ("17:30" . doom-one)))
-;;   (circadian-setup))
+;;   (circadian-setup)
+;;   )
 (use-package doom-themes
   :ensure t
   :config
@@ -454,7 +464,8 @@
   :ensure t
   :after all-the-icons
   :pin elpa-local
-  :hook (window-setup . doom-modeline-mode)
+  :config
+  (doom-modeline-mode 1)
   )
 #+end_src
 
@@ -469,26 +480,28 @@
          ("C-h C-d" . helpful-at-point)
          ("C-h F" . helpful-function)
          ("C-h C" . helpful-command)
-         ("C-h C-a" . helpful-at-point)))
+         ("C-h C-a" . helpful-at-point)
+         )
+  )
 #+end_src
 
 **** vertico
 #+begin_src emacs-lisp :tangle yes
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; vertico minibuffer 补全
 (use-package vertico
   :ensure t
-  :hook (on-first-input . vertico-mode)
-  :commands (vertico-mode)
+  :defer 0.5
   :bind (:map vertico-map
          ("DEL" . vertico-directory-delete-char))
   :config
+  (vertico-mode t)
   (setq vertico-count 12))
 #+end_src
 
 **** savehist
 #+begin_src emacs-lisp :tangle yes
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (use-package savehist
   :ensure nil
   :hook (vertico-mode . savehist-mode))
@@ -496,10 +509,11 @@
 
 **** orderless
 #+begin_src emacs-lisp :tangle yes
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Optionally use the `orderless' completion style.
 (use-package orderless
   :ensure t
+  :defer 0.5
   :config
   (setq completion-styles '(orderless basic)
         completion-category-defaults nil
@@ -517,7 +531,7 @@
 
 **** consult
 #+begin_src emacs-lisp :tangle yes
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Search content in the file
 (use-package consult :ensure t)
 #+end_src
@@ -526,7 +540,7 @@
 #+begin_src emacs-lisp :tangle yes
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; 显示介绍
-(use-package marginalia :ensure t :hook (vertico-mode . marginalia-mode))
+(use-package marginalia :ensure t :hook (after-init . marginalia-mode))
 #+end_src
 
 **** search 扩展
@@ -534,6 +548,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; ;; A few more useful configurations...
 (use-package emacs
   :ensure nil
+  :defer 0.5
   :config
   ;; Add prompt indicator to `completing-read-multiple'.
   ;; We display [CRM<separator>], e.g., [CRM,] if the separator is a comma.
@@ -626,10 +641,11 @@
 
 **** Org Appt 通知
 #+begin_src emacs-lisp :tangle yes
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; org 通知设置
 (use-package appt
   :ensure nil
+  :defer 0.5
   :hook (org-agenda-finalize . org-agenda-to-appt)
   :config
   ;; 每小时同步一次appt,并且现在就开始同步
@@ -659,6 +675,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (use-package org
   :ensure nil
+  :defer 0.5
   :config
   (setq org-capture-bookmark nil)
   (when (string= "gnu/linux" system-type)
@@ -741,7 +758,8 @@
              "+  %?" :kill-buffer t :prepend 1)
             ))
     )
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; org-protocol-capture-html Capture Configuration windows-nt
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  ;; org-protocol-capture-html Capture Configuration windows-nt
   (when (string= "windows-nt" system-type)
     (setq org-capture-templates
           '(
@@ -842,7 +860,6 @@
 ;; org-roam
 (use-package org-roam
   :ensure t
-  :hook (on-first-input . org-roam-db-autosync-mode)
   :init
   (when (string= "windows-nt" system-type)
     (setq org-roam-directory (file-truename "F:\\MyFile\\Org")))
@@ -851,6 +868,8 @@
   (when (string= "darwin" system-type)
     (setq org-roam-directory (file-truename "~/Desktop/MyFile/Org/")))
   :config
+  ;;搜索
+  (setq org-roam-node-display-template "${title}")
   ;;补全
   (setq org-roam-completion-everywhere t)
   ;;一个也可以设置org-roam-db-node-include-function。例如，ATTACH要从 Org-roam 数据库中排除所有带有标签的标题，可以设置：
@@ -870,6 +889,7 @@
   (setq org-roam-node-display-template
         (concat "${type:15} ${title:*} " (propertize "${tags:10}" 'face 'org-tag)))
   (setq org-roam-db-update-on-save t)
+  (org-roam-db-autosync-mode 1)
   (setq org-roam-database-connector 'sqlite)
   )
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -889,6 +909,7 @@
 ;; org-download
 (use-package org-download
   :ensure t
+  :defer 1
   :hook (dired-mode . org-download-enable)
   :config
   ;; (add-hook 'dired-mode-hook 'org-download-enable)
@@ -902,7 +923,7 @@
   )
 #+end_src
 
-**** org-themify
+**** org-html-themify
 #+begin_src emacs-lisp :tangle yes
 (defvar bootstrap-version)
 (let ((bootstrap-file
@@ -944,8 +965,8 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; org 标题加密， 只需添加 :crypt:
 (use-package org-crypt
+  :defer 0.5
   :ensure nil
-  :after org
   :config
   (org-crypt-use-before-save-magic)
   (setq org-tags-exclude-from-inheritance '("crypt"))
@@ -968,7 +989,7 @@
 #+begin_src emacs-lisp :tangle yes
 (use-package projectile
   :ensure t
-  :hook (window-setup . projectile-mode)
+  :hook (after-init . projectile-mode)
   :config
   (use-package ripgrep :ensure t :pin elpa-local)
   (use-package projectile-ripgrep :ensure t :pin elpa-local)
@@ -981,10 +1002,11 @@
 ;; yasnippet 补全
 (use-package yasnippet
   :ensure t
-  :hook (on-first-input . yas-global-mode)
+  :hook (after-init . yas-global-mode)
   :config
   (setq yas--default-user-snippets-dir (format "%ssnippets" freedom-emacs-directory))
-  (setq yas-snippet-dirs '("~/.freedom.d/snippets")))
+  (setq yas-snippet-dirs '("~/.freedom.d/snippets"))
+)
 #+end_src
 
 **** ace-link
@@ -996,9 +1018,9 @@
 
 **** volatile-hights
 #+begin_src emacs-lisp :tangle yes
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Highlight some operations
-(use-package volatile-highlights :ensure t :hook (on-first-buffer . volatile-highlights-mode))
+(use-package volatile-highlights :ensure t :hook (after-init . volatile-highlights-mode))
 #+end_src
 
 **** magit
@@ -1013,7 +1035,7 @@
 ;; diff 高亮
 (use-package diff-hl
   :ensure t
-  :hook '((window-setup . global-diff-hl-mode)
+  :hook '((after-init . global-diff-hl-mode)
           (magit-pre-refresh . diff-hl-magit-pre-refresh)
           (magit-post-refresh . diff-hl-magit-post-refresh)))
 #+end_src
@@ -1024,7 +1046,7 @@
 ;; 高亮 symbol
 (use-package symbol-overlay
   :ensure t
-  :hook (on-first-file . symbol-overlay-mode)
+  :hook (after-init . symbol-overlay-mode)
   :init (setq symbol-overlay-idle-time 0.1)
   :bind (("M-i" . symbol-overlay-put)
          ("M-n" . symbol-overlay-jump-next)
@@ -1042,7 +1064,7 @@
 ;; 高亮括号匹配
 (use-package paren
   :ensure nil
-  :hook (on-first-file . show-paren-mode)
+  :hook (after-init . show-paren-mode)
   :init
   (setq show-paren-when-point-in-periphery t
         show-paren-when-point-inside-paren t))
@@ -1053,7 +1075,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (use-package undo-tree
   :ensure t
-  :hook (on-first-file . global-undo-tree-mode)
+  :hook (after-init . global-undo-tree-mode)
   :config
   (setq undo-tree-history-directory-alist '(("." . "~/.emacs.d/undo-tree")))
   (setq undo-tree-visualizer-diff t
@@ -1089,7 +1111,7 @@
 ;; elec-pair 自动补全括号
 (use-package elec-pair
   :ensure nil
-  :hook (on-first-file . electric-pair-mode)
+  :hook (after-init . electric-pair-mode)
   :init (setq electric-pair-inhibit-predicate 'electric-pair-conservative-inhibit))
 #+end_src
 
@@ -1107,6 +1129,7 @@
 ;; 此模式开启时 org-mode 非常卡
 (use-package highlight-indent-guides
   :ensure t
+  :defer 0.5
   :hook ((python-mode emacs-lisp-mode c-mode nix-mode) . highlight-indent-guides-mode)
   :init
   (setq highlight-indent-guides-method 'character
@@ -1139,9 +1162,10 @@
 #+begin_src emacs-lisp :tangle yes
 (use-package auto-save
   :ensure nil
-  :hook (on-first-input . auto-save-enable)
   :config
-  (setq auto-save-silent t))
+  (auto-save-enable)
+  (setq auto-save-silent t)   ; quietly save
+)
 #+end_src
 
 *** Navigation
@@ -1179,10 +1203,11 @@
 ;; avy 单词跳跃
 (use-package avy :ensure t)
 (use-package ace-pinyin
+  :defer 0.5
   :ensure t
   :after avy
   :init (setq ace-pinyin-use-avy t)
-  :hook (on-first-input . ace-pinyin-global-mode))
+  :config (ace-pinyin-global-mode t))
 #+end_src
 
 **** ace-window
@@ -1201,6 +1226,7 @@
 ;; zoom 自动调整窗口大小
 (use-package zoom
   :ensure t
+  :defer 0.5
   :config
   (custom-set-variables
    '(zoom-mode t))
@@ -1229,14 +1255,19 @@
   :config
   ;; recentf 排除
   (when recentf-mode
-    (push elfeed-db-directory recentf-exclude)))
+    (push elfeed-db-directory recentf-exclude))
+  ;; (setq elfeed-show-entry-switch #'pop-to-buffer
+  ;;       shr-max-image-proportion 0.8)
+  )
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; elfeed-org
 (use-package elfeed-org
   :ensure t
+  :defer 1
   :init
   (setq rmh-elfeed-org-files (list (expand-file-name "elfeed.org" freedom-emacs-directory)))
-  :hook (on-first-input . elfeed-org))
+  :config
+  (elfeed-org))
 #+end_src
 
 **** gnus
@@ -1457,7 +1488,7 @@ nil means disabled."
              company-complete-common-or-cycle
              company-manual-begin
              company-grab-line)
-  :hook (on-first-file . global-company-mode)
+  :hook (after-init . global-company-mode)
   :init
 
   (setq company-minimum-prefix-length 2
@@ -1505,7 +1536,8 @@ nil means disabled."
     (eldoc-add-command 'company-complete-selection
                        'company-complete-common
                        'company-capf
-                       'company-abort)))
+                       'company-abort))
+  )
 
 (use-package company-files
   :ensure nil
@@ -1584,6 +1616,7 @@ nil means disabled."
   )
 
 (use-package company-dict
+  :defer t
   :config
   (setq company-dict-dir (expand-file-name "dicts" doom-user-dir))
   (add-hook! 'doom-project-hook
@@ -1599,12 +1632,13 @@ nil means disabled."
 #+begin_src emacs-lisp :tangle yes
   (use-package corfu
     :ensure t
+    :defer 0.5
     :hook ((prog-mode . corfu-mode)
            (shell-mode . corfu-mode)
            (eshell-mode . corfu-mode)
            (corfu-mode . corfu-history-mode)
            (corfu-mode . corfu-indexed-mode)
-           (on-first-file . global-corfu-mode)
+           (after-init . global-corfu-mode)
            (meow-normal-mode . corfu-quit))
     :bind
     (:map corfu-map
@@ -1668,6 +1702,7 @@ nil means disabled."
 #+begin_src emacs-lisp :tangle no
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (use-package go-translate
+  ;; :defer-incrementally t
   :ensure t
   :commands (gts-do-translate)
   :config
@@ -1687,11 +1722,13 @@ nil means disabled."
 #+begin_src emacs-lisp :tangle yes
 (use-package google-translate
   :ensure t
+  :defer 0.5
   :config
   (setq google-translate-default-source-language "auto"
         google-translate-default-target-language "zh-CN")
   (setq google-translate-translation-directions-alist
-        '(("en" . "zh-CN") ("zh-CN" . "en"))))
+        '(("en" . "zh-CN") ("zh-CN" . "en")))
+  )
 #+end_src
 
 **** english help 
@@ -1699,6 +1736,7 @@ nil means disabled."
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (use-package corfu-english-helper
   :ensure nil
+  :defer 0.5
   :after corfu
   :config
   (defun freedom-english-corfu-toggle ()
@@ -1708,14 +1746,15 @@ nil means disabled."
 ;; 输入中文后自动翻译
 (use-package insert-translated-name
   :ensure nil
-  :bind ("C-\\". insert-translated-name-insert)
-  :commands (insert-translated-name-insert)
+  :defer 0.5
+  :bind ("C-\\". freedom-english-translate)
   :config
   (setq insert-translated-name-translate-engine "youdao");; ;google  youdao
   (defun freedom-english-translate ()
     (interactive))
   (advice-add #'freedom-english-translate :override #'insert-translated-name-insert)
   )
+
 #+end_src
 
 *** Calendar
@@ -1724,7 +1763,7 @@ nil means disabled."
 ;; calfw
 (use-package calfw
   :ensure t
-  :commands (calendar)
+  :defer 0.5
   :config
   (use-package calfw-org :ensure t)
   (use-package calfw-ical :ensure t)
@@ -1752,6 +1791,7 @@ nil means disabled."
 ;; cal-china-x
 (use-package cal-china-x
   :ensure t
+  :defer 0.5
   :after calendar
   :commands cal-china-x-setup
   :init (cal-china-x-setup)
@@ -1792,6 +1832,7 @@ nil means disabled."
 ;; markdown-mode
 (use-package markdown-mode
   :ensure t
+  :defer 1
   ;; :commands (markdown-mode gfm-mode)
   :mode (("README\\.md\\'" . gfm-mode)
          ("\\.md\\'" . markdown-mode)
@@ -1813,13 +1854,14 @@ nil means disabled."
   )
 #+end_src
 
-*** pyim
+*** Pyim
 #+begin_src emacs-lisp :tangle yes
 (use-package pyim-basedict :ensure t :pin elpa-local)
-(use-package pyim :ensure t :pin elpa-local
+(use-package pyim :ensure t :pin elpa-local :defer 0.5
   :init
   (setq pyim-dcache-directory (format "%s.local/pyim" freedom-emacs-directory))
   (setq default-input-method "pyim")
+
   :config
   (pyim-basedict-enable);; 为 pyim 添加词库
   (pyim-default-scheme 'xiaohe-shuangpin) ;;
@@ -1932,10 +1974,8 @@ nil means disabled."
 *** Sessions
 #+begin_src emacs-lisp :tangle yes
 (use-package restart-emacs :ensure t)
-;;(recentf-mode 1)
-;;(save-place-mode 1)
-(add-hook 'on-first-file-hook 'recentf-mode)
-(add-hook 'on-first-file-hook 'save-place-mode)
+(recentf-mode 1)
+(save-place-mode 1)
 #+end_src
 
 #+begin_src emacs-lisp :tangle no
